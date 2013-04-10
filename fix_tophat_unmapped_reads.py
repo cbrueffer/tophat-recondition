@@ -50,7 +50,7 @@ def main(path, mapped_file="accepted_hits.bam", unmapped_file="unmapped.bam"):
         read = unmapped_reads[i]
 
         # remove /1 and /2 suffixes
-        if read.qname.index("/") != -1:
+        if read.qname.find("/") != -1:
             read.qname = read.qname[:-2]
 
         # work around "mate is unmapped" bug in Tophat before version 2.0.9
