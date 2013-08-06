@@ -37,7 +37,7 @@ def get_mapped_read(index, mapped_reads, read):
         return None
 
 
-def main(path, mapped_file="accepted_hits.bam", unmapped_file="unmapped.bam"):
+def main(path, outdir, mapped_file="accepted_hits.bam", unmapped_file="unmapped.bam"):
     bam_mapped = pysam.Samfile(os.path.join(path, mapped_file))
     mapped_reads = list(bam_mapped.fetch())
     bam_unmapped = pysam.Samfile(os.path.join(path, unmapped_file))
@@ -80,7 +80,7 @@ def main(path, mapped_file="accepted_hits.bam", unmapped_file="unmapped.bam"):
     # for the output file, take the headers from the unmapped file
     base, ext = os.path.splitext(unmapped_file)
     out_filename = "".join([base, "_fixup", ext])
-    bam_out = pysam.Samfile(os.path.join(path, out_filename), "wb",
+    bam_out = pysam.Samfile(os.path.join(outdir, out_filename), "wb",
                         template=bam_unmapped)
 
     bam_unmapped.close()
@@ -101,7 +101,15 @@ if __name__ == "__main__":
     if len(sys.argv) == 2:
         path = sys.argv[1]
         if os.path.exists(path) and os.path.isdir(path):
-            main(sys.argv[1])
+            # no outdir specified, use the bam dir
+            main(path, path)
+        else:
+            usage(sys.argv[0])
+    elif len(sys.argv) == 3:
+        path = sys.argv[1]
+        outdir = sys.argv[2]
+        if os.path.exists(path) and os.path.isdir(path) and os.path.exists(outdir) and os.path.isdir(outdir):
+            main(path, outdir)
         else:
             usage(sys.argv[0])
     else:
