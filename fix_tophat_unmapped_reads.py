@@ -39,7 +39,19 @@ def get_mapped_read(index, mapped_reads, read):
 
 def main(path, outdir, mapped_file="accepted_hits.bam", unmapped_file="unmapped.bam"):
     bam_mapped = pysam.Samfile(os.path.join(path, mapped_file))
+    
+    # TopHat < 2.0.9 contains a bug where the "mate is unmapped" SAM flag is
+    # not set correctly for certain reads.  Work around this if needed.
+    fix_unmapped_flags = False
+    if bam_mapped.header['PG']:
+        for prog in bam_mapped.header['PG']:
+            if 'TopHat' in prog['ID']:
+                major, minor, patchlevel = [int(x) for x in prog['VN'].split(".")]
+                if major == 2 and minor == 0 and patchlevel < 9:
+                    fix_unmapped_flags = True
+
     mapped_reads = list(bam_mapped.fetch())
+
     bam_unmapped = pysam.Samfile(os.path.join(path, unmapped_file))
     unmapped_reads = list(bam_unmapped.fetch(until_eof=True))
 
@@ -54,7 +66,7 @@ def main(path, outdir, mapped_file="accepted_hits.bam", unmapped_file="unmapped.
             read.qname = read.qname[:-2]
 
         # work around "mate is unmapped" bug in Tophat before version 2.0.9
-        if read.qname in unmapped_dict:
+        if fix_unmapped_flags and read.qname in unmapped_dict:
             unmapped_reads[unmapped_dict[read.qname]].mate_is_unmapped = True
             read.mate_is_unmapped = True
         else:
@@ -101,7 +113,7 @@ if __name__ == "__main__":
     if len(sys.argv) == 2:
         path = sys.argv[1]
         if os.path.exists(path) and os.path.isdir(path):
-            # no outdir specified, use the bam dir
+            # no tmpdir specified, use the bam dir
             main(path, path)
         else:
             usage(sys.argv[0])
