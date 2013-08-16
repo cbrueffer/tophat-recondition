@@ -16,23 +16,21 @@ import pysam
 import sys
 
 
-def get_mapped_index(mapped_reads):
-    """Builds a dict of all mapped reads with an unmapped mate, and their
-    positions.""" 
+def get_unmapped_index(unmapped_reads):
+    """Builds a dict of all unmapped reads, and their list positions."""
 
     index = {}
-    for i, read in enumerate(mapped_reads):
-        if read.mate_is_unmapped:
-            index[read.qname] = i
+    for i, read in enumerate(unmapped_reads):
+        index[read.qname] = i
 
     return index
 
 
-def get_mapped_read(index, mapped_reads, read):
+def get_unmapped_read_index(index, unmapped_reads, read):
     """Returns the position of a read in the index or None."""
 
     if read.qname in index:
-        return mapped_reads[index[read.qname]]
+        return index[read.qname]
     else:
         return None
 
@@ -50,14 +48,32 @@ def main(path, outdir, mapped_file="accepted_hits.bam", unmapped_file="unmapped.
                 if major == 2 and minor == 0 and patchlevel < 9:
                     fix_unmapped_flags = True
 
-    mapped_reads = list(bam_mapped.fetch())
-
     bam_unmapped = pysam.Samfile(os.path.join(path, unmapped_file))
     unmapped_reads = list(bam_unmapped.fetch(until_eof=True))
 
-    index = get_mapped_index(mapped_reads)
+    index = get_unmapped_index(unmapped_reads)
     unmapped_dict = {}
 
+    # Fix things that relate only to unmapped reads with a mapped mate.
+    for mapped in bam_mapped:
+        if mapped.mate_is_unmapped:
+            i = get_unmapped_read_index(index, unmapped_reads, mapped)
+            if i is not None:
+                unmapped = unmapped_reads[i]
+
+                # map chromosome TIDs from mapped to unmapped file
+                mapped_rname = bam_mapped.getrname(mapped.tid)
+                unmapped_new_tid = bam_unmapped.gettid(mapped_rname)
+
+                unmapped.tid = unmapped_new_tid
+                unmapped.rnext = unmapped_new_tid
+                unmapped.pos = mapped.pos
+                unmapped.pnext = 0
+
+                unmapped_reads[i] = unmapped
+
+
+    # Fix things that relate to all unmapped reads.
     for i in range(len(unmapped_reads)):
         read = unmapped_reads[i]
 
@@ -65,7 +81,7 @@ def main(path, outdir, mapped_file="accepted_hits.bam", unmapped_file="unmapped.
         if read.qname.find("/") != -1:
             read.qname = read.qname[:-2]
 
-        # work around "mate is unmapped" bug in Tophat before version 2.0.9
+        # work around "mate is unmapped" bug in TopHat before version 2.0.9
         if fix_unmapped_flags and read.qname in unmapped_dict:
             unmapped_reads[unmapped_dict[read.qname]].mate_is_unmapped = True
             read.mate_is_unmapped = True
@@ -73,17 +89,6 @@ def main(path, outdir, mapped_file="accepted_hits.bam", unmapped_file="unmapped.
             unmapped_dict[read.qname] = i
 
         read.mapq = 0
-
-        mate = get_mapped_read(index, mapped_reads, read)
-        if mate:
-            # map chromosome TIDs from mapped to unmapped file
-            mate_rname = bam_mapped.getrname(mate.tid)
-            read_new_tid = bam_unmapped.gettid(mate_rname)
-
-            read.tid = read_new_tid
-            read.rnext = read_new_tid
-            read.pos = mate.pos
-            read.pnext = 0
 
         unmapped_reads[i] = read
 
