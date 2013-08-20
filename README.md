@@ -7,7 +7,7 @@ fix_tophat_unmapped_reads.py
 ----------------------------
 
 Fixes unmapped TopHat reads (contained in unmapped.bam) to make them compatible with other tools,
-e.g. the Picard suite and samtools.  It also works around a bug in TopHat prior to version 2.0.9 where
+e.g. the Picard suite and samtools.  It also works around a bug in TopHat where
 the "mate is unmapped" SAM flag is not set on any reads in the unmapped.bam file.  This script requires ```pysam``` to be installed.
 
 Usage: ```$ ./fix_tophat_unmapped_reads.py input_bam_dir [output_bam_dir]```

@@ -60,16 +60,6 @@ def main(path, outdir, mapped_file="accepted_hits.bam", unmapped_file="unmapped.
 
                 unmapped_reads[i] = unmapped
 
-    # TopHat < 2.0.9 contains a bug where the "mate is unmapped" SAM flag was
-    # not set correctly for certain reads, work around this if needed.
-    fix_unmapped_flags = True
-    if bam_mapped.header['PG']:
-        for prog in bam_mapped.header['PG']:
-            if 'TopHat' in prog['ID']:
-                major, minor, patchlevel = [int(x) for x in prog['VN'].split(".")]
-                if major == 2 and minor == 0 and patchlevel < 9:
-                    fix_unmapped_flags = True
-
     # Fix things that relate to all unmapped reads.
     unmapped_dict = {}
     for i in range(len(unmapped_reads)):
@@ -79,8 +69,8 @@ def main(path, outdir, mapped_file="accepted_hits.bam", unmapped_file="unmapped.
         if read.qname.find("/") != -1:
             read.qname = read.qname[:-2]
 
-        # work around "mate is unmapped" bug in TopHat before version 2.0.9
-        if fix_unmapped_flags and read.qname in unmapped_dict:
+        # work around "mate is unmapped" bug in TopHat
+        if read.qname in unmapped_dict:
             unmapped_reads[unmapped_dict[read.qname]].mate_is_unmapped = True
             read.mate_is_unmapped = True
         else:
