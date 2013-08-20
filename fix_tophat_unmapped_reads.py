@@ -16,7 +16,7 @@ import pysam
 import sys
 
 
-def get_unmapped_index(unmapped_reads):
+def build_unmapped_index(unmapped_reads):
     """Builds a dict of all unmapped reads, and their list positions."""
 
     index = {}
@@ -26,7 +26,7 @@ def get_unmapped_index(unmapped_reads):
     return index
 
 
-def get_unmapped_read_index(index, unmapped_reads, read):
+def get_index_pos(index, unmapped_reads, read):
     """Returns the position of a read in the index or None."""
 
     if read.qname in index:
@@ -37,27 +37,15 @@ def get_unmapped_read_index(index, unmapped_reads, read):
 
 def main(path, outdir, mapped_file="accepted_hits.bam", unmapped_file="unmapped.bam"):
     bam_mapped = pysam.Samfile(os.path.join(path, mapped_file))
-    
-    # TopHat < 2.0.9 contains a bug where the "mate is unmapped" SAM flag is
-    # not set correctly for certain reads.  Work around this if needed.
-    fix_unmapped_flags = False
-    if bam_mapped.header['PG']:
-        for prog in bam_mapped.header['PG']:
-            if 'TopHat' in prog['ID']:
-                major, minor, patchlevel = [int(x) for x in prog['VN'].split(".")]
-                if major == 2 and minor == 0 and patchlevel < 9:
-                    fix_unmapped_flags = True
-
     bam_unmapped = pysam.Samfile(os.path.join(path, unmapped_file))
     unmapped_reads = list(bam_unmapped.fetch(until_eof=True))
 
-    index = get_unmapped_index(unmapped_reads)
-    unmapped_dict = {}
+    index = build_unmapped_index(unmapped_reads)
 
     # Fix things that relate only to unmapped reads with a mapped mate.
     for mapped in bam_mapped:
         if mapped.mate_is_unmapped:
-            i = get_unmapped_read_index(index, unmapped_reads, mapped)
+            i = get_index_pos(index, unmapped_reads, mapped)
             if i is not None:
                 unmapped = unmapped_reads[i]
 
@@ -72,8 +60,18 @@ def main(path, outdir, mapped_file="accepted_hits.bam", unmapped_file="unmapped.
 
                 unmapped_reads[i] = unmapped
 
+    # TopHat < 2.0.9 contains a bug where the "mate is unmapped" SAM flag was
+    # not set correctly for certain reads, work around this if needed.
+    fix_unmapped_flags = True
+    if bam_mapped.header['PG']:
+        for prog in bam_mapped.header['PG']:
+            if 'TopHat' in prog['ID']:
+                major, minor, patchlevel = [int(x) for x in prog['VN'].split(".")]
+                if major == 2 and minor == 0 and patchlevel < 9:
+                    fix_unmapped_flags = True
 
     # Fix things that relate to all unmapped reads.
+    unmapped_dict = {}
     for i in range(len(unmapped_reads)):
         read = unmapped_reads[i]
 
