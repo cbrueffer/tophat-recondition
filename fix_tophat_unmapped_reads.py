@@ -40,26 +40,6 @@ def main(path, outdir, mapped_file="accepted_hits.bam", unmapped_file="unmapped.
     bam_unmapped = pysam.Samfile(os.path.join(path, unmapped_file))
     unmapped_reads = list(bam_unmapped.fetch(until_eof=True))
 
-    index = build_unmapped_index(unmapped_reads)
-
-    # Fix things that relate only to unmapped reads with a mapped mate.
-    for mapped in bam_mapped:
-        if mapped.mate_is_unmapped:
-            i = get_index_pos(index, unmapped_reads, mapped)
-            if i is not None:
-                unmapped = unmapped_reads[i]
-
-                # map chromosome TIDs from mapped to unmapped file
-                mapped_rname = bam_mapped.getrname(mapped.tid)
-                unmapped_new_tid = bam_unmapped.gettid(mapped_rname)
-
-                unmapped.tid = unmapped_new_tid
-                unmapped.rnext = unmapped_new_tid
-                unmapped.pos = mapped.pos
-                unmapped.pnext = 0
-
-                unmapped_reads[i] = unmapped
-
     # Fix things that relate to all unmapped reads.
     unmapped_dict = {}
     for i in range(len(unmapped_reads)):
@@ -79,6 +59,25 @@ def main(path, outdir, mapped_file="accepted_hits.bam", unmapped_file="unmapped.
         read.mapq = 0
 
         unmapped_reads[i] = read
+
+    # Fix things that relate only to unmapped reads with a mapped mate.
+    index = build_unmapped_index(unmapped_reads)
+    for mapped in bam_mapped:
+        if mapped.mate_is_unmapped:
+            i = get_index_pos(index, unmapped_reads, mapped)
+            if i is not None:
+                unmapped = unmapped_reads[i]
+
+                # map chromosome TIDs from mapped to unmapped file
+                mapped_rname = bam_mapped.getrname(mapped.tid)
+                unmapped_new_tid = bam_unmapped.gettid(mapped_rname)
+
+                unmapped.tid = unmapped_new_tid
+                unmapped.rnext = unmapped_new_tid
+                unmapped.pos = mapped.pos
+                unmapped.pnext = 0
+
+                unmapped_reads[i] = unmapped
 
     bam_mapped.close()
 
