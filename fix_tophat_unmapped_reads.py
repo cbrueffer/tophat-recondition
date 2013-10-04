@@ -16,16 +16,6 @@ import pysam
 import sys
 
 
-def build_unmapped_index(unmapped_reads):
-    """Builds a dict of all unmapped reads, and their list positions."""
-
-    index = {}
-    for i, read in enumerate(unmapped_reads):
-        index[read.qname] = i
-
-    return index
-
-
 def get_index_pos(index, unmapped_reads, read):
     """Returns the position of a read in the index or None."""
 
@@ -42,12 +32,15 @@ def main(path, outdir, mapped_file="accepted_hits.bam", unmapped_file="unmapped.
 
     # Fix things that relate to all unmapped reads.
     unmapped_dict = {}
+    unmapped_index = {}
     for i in range(len(unmapped_reads)):
         read = unmapped_reads[i]
 
         # remove /1 and /2 suffixes
         if read.qname.find("/") != -1:
             read.qname = read.qname[:-2]
+
+        unmapped_index[read.qname] = i
 
         # work around "mate is unmapped" bug in TopHat
         if read.qname in unmapped_dict:
@@ -61,10 +54,9 @@ def main(path, outdir, mapped_file="accepted_hits.bam", unmapped_file="unmapped.
         unmapped_reads[i] = read
 
     # Fix things that relate only to unmapped reads with a mapped mate.
-    index = build_unmapped_index(unmapped_reads)
     for mapped in bam_mapped:
         if mapped.mate_is_unmapped:
-            i = get_index_pos(index, unmapped_reads, mapped)
+            i = get_index_pos(unmapped_index, unmapped_reads, mapped)
             if i is not None:
                 unmapped = unmapped_reads[i]
 
