@@ -28,6 +28,7 @@
 # This script fixes the reads in a TopHat unmapped.bam to make them compatible
 # with downstream tools (i.e., Picard and samtools).
 
+import errno
 import os
 import pysam
 import sys
@@ -42,7 +43,7 @@ def get_index_pos(index, unmapped_reads, read):
         return None
 
 
-def main(path, outdir, mapped_file="accepted_hits.bam", unmapped_file="unmapped.bam"):
+def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam", unmapped_file="unmapped.bam"):
     # Fix things that relate to all unmapped reads.
     unmapped_dict = {}
     unmapped_index = {}
@@ -97,26 +98,70 @@ def main(path, outdir, mapped_file="accepted_hits.bam", unmapped_file="unmapped.
                 bam_out.write(read)
 
 
-def usage(scriptname):
-    print "Usage:"
-    print scriptname, "tophat_output_dir"
-    sys.exit(1)
+def usage(scriptname, errcode=errno.EINVAL):
+    print "Usage:\n"
+    print scriptname, "[-hv] [tophat_output_dir [result_dir]]\n"
+    print "-h                 print this usage text and exit"
+    print "-v                 print the script name and version, and exit"
+    print "tophat_output_dir: directory containing accepted_hits.bam and unmapped.bam"
+    print "result_dir:        directory to write unmapped_fixup.bam to (default: tophat_output_dir)"
+    sys.exit(errcode)
 
 
 if __name__ == "__main__":
-    if len(sys.argv) == 2:
-        path = sys.argv[1]
-        if os.path.exists(path) and os.path.isdir(path):
-            # no tmpdir specified, use the bam dir
-            main(path, path)
+    import getopt
+
+    scriptname = os.path.basename(sys.argv[0])
+    version = "0.1"
+
+    try:
+        opts, args = getopt.gnu_getopt(sys.argv[1:], "dhv")
+    except getopt.GetoptError, err:
+        # print help information and exit
+        print >>sys.stderr, str(err)
+        usage(scriptname, errcode=errno.EINVAL)
+
+    debug = None
+    for o, a in opts:
+        if o in ("-d"):
+            usage(scriptname, errcode=0)
+        elif o in ("-h"):
+            usage(scriptname, errcode=0)
+        elif o in ("-v"):
+            print scriptname, version
+            sys.exit(0)
         else:
-            usage(sys.argv[0])
-    elif len(sys.argv) == 3:
-        path = sys.argv[1]
-        outdir = sys.argv[2]
-        if os.path.exists(path) and os.path.isdir(path) and os.path.exists(outdir) and os.path.isdir(outdir):
-            main(path, outdir)
-        else:
-            usage(sys.argv[0])
+            assert False, "unhandled option"
+            sys.exit(errno.EINVAL)
+
+    if len(args) == 0 or len(args) > 2:
+        usage(scriptname, errcode=errno.EINVAL)
+
+    bamdir = args.pop(0)
+    if not os.path.isdir(bamdir):
+        print >>sys.stderr, "Specified tophat_output_dir does not exist or is not a directory: %s" % bamdir
+        sys.exit(errno.EINVAL)
+
+    if len(args) > 0:
+        resultdir = args.pop(0)
+        if not os.path.isdir(resultdir):
+            print >>sys.stderr, "Specified result_dir does not exist or is not a directory: %s" % resultdir
+            sys.exit(errno.EINVAL)
     else:
-        usage(sys.argv[0])
+        resultdir = bamdir
+
+    try:
+        fix_unmapped_reads(bamdir, resultdir)
+    except KeyboardInterrupt:
+        print "Program interrupted by user, exiting."
+        sys.exit(errno.EINTR)
+    except Exception as e:
+        if debug:
+            import traceback
+            print >>sys.stderr, traceback.format_exc()
+
+        print >>sys.stderr, "Error: %s" % str(e)
+        if hasattr(e, "errno"):
+            sys.exit(e.errno)
+        else:
+            sys.exit(1)
