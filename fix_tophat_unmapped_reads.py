@@ -36,7 +36,7 @@ import pysam
 import sys
 
 
-def get_index_pos(index, unmapped_reads, read):
+def get_index_pos(index, read):
     """Returns the position of a read in the index or None."""
 
     if read.qname in index:
@@ -49,7 +49,7 @@ def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam", unmapped_f
     # Fix things that relate to all unmapped reads.
     unmapped_dict = {}
     unmapped_index = {}
-    with pysam.Samfile(os.path.join(path, unmapped_file)) as bam_unmapped:  
+    with pysam.Samfile(os.path.join(path, unmapped_file)) as bam_unmapped:
         unmapped_reads = list(bam_unmapped.fetch(until_eof=True))
         for i in range(len(unmapped_reads)):
             read = unmapped_reads[i]
@@ -75,7 +75,7 @@ def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam", unmapped_f
         with pysam.Samfile(os.path.join(path, mapped_file)) as bam_mapped:
             for mapped in bam_mapped:
                 if mapped.mate_is_unmapped:
-                    i = get_index_pos(unmapped_index, unmapped_reads, mapped)
+                    i = get_index_pos(unmapped_index, mapped)
                     if i is not None:
                         unmapped = unmapped_reads[i]
 
@@ -125,11 +125,11 @@ if __name__ == "__main__":
 
     debug = None
     for o, a in opts:
-        if o in ("-d"):
+        if o in "-d":
             usage(scriptname, errcode=0)
-        elif o in ("-h"):
+        elif o in "-h":
             usage(scriptname, errcode=0)
-        elif o in ("-v"):
+        elif o in "-v":
             print(scriptname, version)
             sys.exit(0)
         else:
