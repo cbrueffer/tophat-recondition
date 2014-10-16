@@ -118,7 +118,7 @@ if __name__ == "__main__":
 
     try:
         opts, args = getopt.gnu_getopt(sys.argv[1:], "dhv")
-    except getopt.GetoptError, err:
+    except getopt.GetoptError as err:
         # print help information and exit
         print(str(err), file=sys.stderr)
         usage(scriptname, errcode=errno.EINVAL)
