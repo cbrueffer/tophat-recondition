@@ -25,8 +25,12 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# This script fixes the reads in a TopHat unmapped.bam to make them compatible
-# with downstream tools (i.e., Picard and samtools).
+"""
+This script modifies the reads in a TopHat unmapped.bam file to make them
+compatible with downstream tools (i.e., Picard, samtools or GATK).
+
+Homepage: https://github.com/cbrueffer/tophat-recondition
+"""
 
 from __future__ import print_function
 
