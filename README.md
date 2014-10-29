@@ -5,6 +5,9 @@ tophat-recondition fixes unmapped TopHat reads (contained in unmapped.bam) to ma
 (i.e., the Picard suite, samtools, GATK).  It also works around a bug in TopHat where
 the "mate is unmapped" SAM flag is not set on any reads in the unmapped.bam file.
 
+This script was developed as part of a PhD research project in the
+[laboratory of Lao H. Saal, Translational Oncogenomics Unit, Department of Oncology and Pathology, Lund University, Sweden](http://www.med.lu.se/english/klinvetlund/oncology_and_pathology/research/canceromics_branch/research_units/translational_oncogenomics/).
+
 
 Dependencies
 ------------
