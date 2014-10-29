@@ -1,17 +1,23 @@
-tophat-recondition
+TopHat Recondition
 ==================
 
 tophat-recondition fixes unmapped TopHat reads (contained in unmapped.bam) to make them compatible with downstream tools
-(i.e., the Picard suite and samtools).  It also works around a bug in TopHat where
-the "mate is unmapped" SAM flag is not set on any reads in the unmapped.bam file.  This script requires ```pysam``` to be installed.
+(i.e., the Picard suite, samtools, GATK).  It also works around a bug in TopHat where
+the "mate is unmapped" SAM flag is not set on any reads in the unmapped.bam file.
+
 
 Dependencies
 ------------
 
-- ```Python >= 2.6```
-- ```pysam```
+- Python >= 2.6
+- [pysam](https://github.com/pysam-developers/pysam)
 
- ```Usage:
+
+Usage
+-----
+
+```
+Usage:
 
 tophat-recondition.py [-hv] [tophat_output_dir [result_dir]]
 
@@ -21,7 +27,11 @@ tophat_output_dir: directory containing accepted_hits.bam and unmapped.bam
 result_dir:        directory to write unmapped_fixup.bam to (default: tophat_output_dir)
 ```
 
-Note: unmapped.bam is read into memory, so make sure your computer has enough RAM to fit it.
+**Note:** unmapped.bam is read into memory, so make sure your computer has enough RAM to fit it.
+
+
+Details
+-------
 
 Specifically, the script does the following (see SAM format specification for details on the fields in capital letters):
 

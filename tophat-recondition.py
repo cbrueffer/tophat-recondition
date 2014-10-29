@@ -32,8 +32,12 @@ from __future__ import print_function
 
 import errno
 import os
-import pysam
 import sys
+try:
+    import pysam
+except ImportError:
+    print('Cannot import the pysam package; please make sure it is installed.\n')
+    sys.exit(1)
 
 
 def get_index_pos(index, read):
@@ -114,7 +118,7 @@ if __name__ == "__main__":
     import getopt
 
     scriptname = os.path.basename(sys.argv[0])
-    version = "0.1"
+    version = "0.2"
 
     try:
         opts, args = getopt.gnu_getopt(sys.argv[1:], "dhv")
