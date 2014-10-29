@@ -1,18 +1,19 @@
-misc_bioinf
-===========
+tophat-recondition
+==================
 
-Repository for miscellaneous bioinformatics scripts that may be useful to others.
-
-fix_tophat_unmapped_reads.py
-----------------------------
-
-Fixes unmapped TopHat reads (contained in unmapped.bam) to make them compatible with downstream tools
+tophat-recondition fixes unmapped TopHat reads (contained in unmapped.bam) to make them compatible with downstream tools
 (i.e., the Picard suite and samtools).  It also works around a bug in TopHat where
 the "mate is unmapped" SAM flag is not set on any reads in the unmapped.bam file.  This script requires ```pysam``` to be installed.
 
+Dependencies
+------------
+
+- ```Python >= 2.6```
+- ```pysam```
+
  ```Usage:
 
-fix_tophat_unmapped_reads.py [-hv] [tophat_output_dir [result_dir]]
+tophat-recondition.py [-hv] [tophat_output_dir [result_dir]]
 
 -h                 print this usage text and exit
 -v                 print the script name and version, and exit
