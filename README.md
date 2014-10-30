@@ -30,7 +30,10 @@ tophat_output_dir: directory containing accepted_hits.bam and unmapped.bam
 result_dir:        directory to write unmapped_fixup.bam to (default: tophat_output_dir)
 ```
 
-**Note:** unmapped.bam is read into memory, so make sure your computer has enough RAM to fit it.
+Please make sure *tophat_output_dir* contains both, the *accepted_hits.bam* and *unmapped.bam* file.  The fixed
+reads will be written to the file *unmapped_fixup.bam* in *result_dir*.
+
+**Note:** *unmapped.bam* is read into memory, so make sure your computer has enough RAM to fit it.
 
 
 Details
