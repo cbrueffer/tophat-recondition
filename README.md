@@ -50,3 +50,10 @@ Specifically, the script does the following (see SAM format specification for de
   * RNEXT: RNAME of the paired read
   * POS:   POS of the paired read
   * PNEXT: 0
+
+
+Citation
+--------
+
+We are in the process of publishing a manuscript involving tophat-recondition.
+For now, if you use this software in your research, please cite it by the URL: https://github.com/cbrueffer/tophat-recondition
