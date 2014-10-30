@@ -49,7 +49,7 @@ for details on the fields in capital letters):
 
 - Sets mapping quality (MAPQ) for unmapped reads to 0.  TopHat sets it to 255 which some downstream tools don't like (even though it is a valid value according to the SAM specification).
 
-- If an unmapped read's paired read is mapped, set the following fields in the unmapped read (apparently downstream tools like Picard don't like the values TopHat fills in for those fields):
+- If an unmapped read's paired read is mapped, set the following fields in the unmapped read (downstream tools like Picard AddOrReplaceReadGroups get confused by the values TopHat fills in for those fields):
   * RNAME: RNAME of the paired read
   * RNEXT: RNAME of the paired read
   * POS:   POS of the paired read
