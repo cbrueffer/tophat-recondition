@@ -40,7 +40,7 @@ Specifically, the script does the following (see [SAM format specification](http
 for details on the fields in capital letters):
 
 - Fixes a bug in TopHat (unfixed as of v2.0.13):
-  * For paired reads where both reads are unmapped, TopHat does not set the 0x8 flag ("mate is unmapped") flag on either read.
+  * For paired reads where both reads are unmapped, TopHat does not set the 0x8 flag ("mate is unmapped") on either read.
 
 - Removes /1 and /2 suffixes from read names (QNAME), if present.
 
