@@ -1,7 +1,7 @@
 TopHat Recondition
 ==================
 
-tophat-recondition fixes unmapped TopHat reads (contained in unmapped.bam) to make them compatible with downstream tools
+tophat-recondition (formally known as fix_tophat_unmapped_reads) fixes unmapped TopHat reads (contained in unmapped.bam) to make them compatible with downstream tools
 (i.e., the Picard suite, samtools, GATK).  It also works around a bug in TopHat where
 the "mate is unmapped" SAM flag is not set on any reads in the unmapped.bam file.
 
@@ -54,6 +54,9 @@ for details on the fields in capital letters):
   * RNEXT: RNAME of the paired read
   * POS:   POS of the paired read
   * PNEXT: 0
+
+Examples of error messages emitted by downstream tools when trying to process unmapped reads without some or all of these
+modifications can be found in [this thread in the SEQanswers forum](http://seqanswers.com/forums/showthread.php?t=28155).
 
 
 Citation
