@@ -1,7 +1,7 @@
 TopHat Recondition
 ==================
 
-tophat-recondition (formally known as fix_tophat_unmapped_reads) fixes unmapped TopHat reads (contained in unmapped.bam) to make them compatible with downstream tools
+tophat-recondition (formally known as fix_tophat_unmapped_reads) modifies unmapped TopHat reads (contained in *unmapped.bam*) to make them compatible with downstream tools
 (i.e., the Picard suite, samtools, GATK).  It also works around a bug in TopHat where
 the "mate is unmapped" SAM flag is not set on any reads in the unmapped.bam file.
 
@@ -12,7 +12,7 @@ This script was developed as part of a PhD research project in the
 Dependencies
 ------------
 
-- Python >= 2.6
+- Python 2 (>= 2.6) or Python 3
 - [pysam](https://github.com/pysam-developers/pysam)
 
 
@@ -56,11 +56,12 @@ for details on the fields in capital letters):
   * PNEXT: 0
 
 Examples of error messages emitted by downstream tools when trying to process unmapped reads without some or all of these
-modifications can be found in [this thread in the SEQanswers forum](http://seqanswers.com/forums/showthread.php?t=28155).
+modifications can be found in [this thread in the SEQanswers forum](http://seqanswers.com/forums/showthread.php?t=28155),
+which lead to the development of this software.
 
 
 Citation
 --------
 
 We are in the process of publishing a manuscript involving tophat-recondition.
-For now, if you use this software in your research, please cite it by the URL: https://github.com/cbrueffer/tophat-recondition
+For now, if you use this software in your research, please cite it by its URL: https://github.com/cbrueffer/tophat-recondition
