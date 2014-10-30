@@ -36,7 +36,8 @@ result_dir:        directory to write unmapped_fixup.bam to (default: tophat_out
 Details
 -------
 
-Specifically, the script does the following (see SAM format specification for details on the fields in capital letters):
+Specifically, the script does the following (see [SAM format specification](http://samtools.github.io/hts-specs/SAMv1.pdf)
+for details on the fields in capital letters):
 
 - Fixes a bug in TopHat (unfixed as of v2.0.13):
   * For paired reads where both reads are unmapped, TopHat does not set the 0x8 flag ("mate is unmapped") flag on either read.
