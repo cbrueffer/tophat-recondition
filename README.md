@@ -9,7 +9,7 @@ This script was developed as part of a PhD research project in the
 [laboratory of Lao H. Saal, Translational Oncogenomics Unit, Department of Oncology and Pathology, Lund University, Sweden](http://www.med.lu.se/english/klinvetlund/oncology_and_pathology/research/canceromics_branch/research_units/translational_oncogenomics/).
 
 
-Dependencies
+Requirements
 ------------
 
 - Python 2 (>= 2.6) or Python 3
