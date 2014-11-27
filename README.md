@@ -22,7 +22,7 @@ Usage
 ```
 Usage:
 
-tophat-recondition.py [-hv] [tophat_output_dir [result_dir]]
+tophat-recondition.py [-hv] tophat_output_dir [result_dir]
 
 -h                 print this usage text and exit
 -v                 print the script name and version, and exit

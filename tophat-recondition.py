@@ -110,7 +110,7 @@ def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam", unmapped_f
 
 def usage(scriptname, errcode=errno.EINVAL):
     print("Usage:\n")
-    print(scriptname, "[-hv] [tophat_output_dir [result_dir]]\n")
+    print(scriptname, "[-hv] tophat_output_dir [result_dir]\n")
     print("-h                 print this usage text and exit")
     print("-v                 print the script name and version, and exit")
     print("tophat_output_dir: directory containing accepted_hits.bam and unmapped.bam")
