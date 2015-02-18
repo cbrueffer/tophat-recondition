@@ -27,7 +27,7 @@
 #
 """
 This script modifies the reads in a TopHat unmapped.bam file to make them
-compatible with downstream tools (i.e., Picard, samtools or GATK).
+compatible with downstream tools (e.g., Picard, samtools or GATK).
 
 Homepage: https://github.com/cbrueffer/tophat-recondition
 """
@@ -43,6 +43,8 @@ except ImportError:
     print('Cannot import the pysam package; please make sure it is installed.\n')
     sys.exit(1)
 
+VERSION = "0.3"
+
 
 def get_index_pos(index, read):
     """Returns the position of a read in the index or None."""
@@ -53,12 +55,14 @@ def get_index_pos(index, read):
         return None
 
 
-def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam", unmapped_file="unmapped.bam"):
+def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
+                       unmapped_file="unmapped.bam", cmdline=""):
     # Fix things that relate to all unmapped reads.
     unmapped_dict = {}
     unmapped_index = {}
     with pysam.Samfile(os.path.join(path, unmapped_file)) as bam_unmapped:
         unmapped_reads = list(bam_unmapped.fetch(until_eof=True))
+        unmapped_header = bam_unmapped.header
         for i in range(len(unmapped_reads)):
             read = unmapped_reads[i]
 
@@ -102,10 +106,14 @@ def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam", unmapped_f
         base, ext = os.path.splitext(unmapped_file)
         out_filename = "".join([base, "_fixup", ext])
 
-        with pysam.Samfile(os.path.join(outdir, out_filename), "wb",
-                           template=bam_unmapped) as bam_out:
-            for read in unmapped_reads:
-                bam_out.write(read)
+    fixup_header = unmapped_header
+    fixup_header['PG'].append({'ID': 'TopHat-Recondition',
+                               'VN': VERSION,
+                               'CL': cmdline})
+    with pysam.Samfile(os.path.join(outdir, out_filename), "wb",
+                       header=fixup_header) as bam_out:
+        for read in unmapped_reads:
+            bam_out.write(read)
 
 
 def usage(scriptname, errcode=errno.EINVAL):
@@ -122,7 +130,7 @@ if __name__ == "__main__":
     import getopt
 
     scriptname = os.path.basename(sys.argv[0])
-    version = "0.2"
+    cmdline = " ".join(sys.argv)
 
     try:
         opts, args = getopt.gnu_getopt(sys.argv[1:], "dhv")
@@ -138,7 +146,7 @@ if __name__ == "__main__":
         elif o in "-h":
             usage(scriptname, errcode=0)
         elif o in "-v":
-            print(scriptname, version)
+            print(scriptname, VERSION)
             sys.exit(0)
         else:
             assert False, "unhandled option"
@@ -161,7 +169,7 @@ if __name__ == "__main__":
         resultdir = bamdir
 
     try:
-        fix_unmapped_reads(bamdir, resultdir)
+        fix_unmapped_reads(bamdir, resultdir, cmdline=cmdline)
     except KeyboardInterrupt:
         print("Program interrupted by user, exiting.")
         sys.exit(errno.EINTR)
