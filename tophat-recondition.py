@@ -139,10 +139,10 @@ if __name__ == "__main__":
         print(str(err), file=sys.stderr)
         usage(scriptname, errcode=errno.EINVAL)
 
-    debug = None
+    debug = False
     for o, a in opts:
         if o in "-d":
-            usage(scriptname, errcode=0)
+            debug = True
         elif o in "-h":
             usage(scriptname, errcode=0)
         elif o in "-v":
