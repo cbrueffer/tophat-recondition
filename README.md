@@ -1,8 +1,8 @@
-TopHat Recondition
+TopHat-Recondition
 ==================
 
 tophat-recondition (formally known as fix_tophat_unmapped_reads) modifies unmapped TopHat reads (contained in *unmapped.bam*) to make them compatible with downstream tools
-(i.e., the Picard suite, samtools, GATK).  It also works around a bug in TopHat where
+(e.g., the Picard suite, samtools, GATK).  It also works around a bug in TopHat where
 the "mate is unmapped" SAM flag is not set on any reads in the unmapped.bam file.
 
 This script was developed as part of a PhD research project in the
@@ -63,5 +63,6 @@ which lead to the development of this software.
 Citation
 --------
 
-We are in the process of publishing a manuscript involving tophat-recondition.
-For now, if you use this software in your research, please cite it by its URL: https://github.com/cbrueffer/tophat-recondition
+If you use this software in your research, please cite:
+
+[Saal et al.: The Sweden Cancerome Analysis Network - Breast (SCAN-B) Initiative: a large-scale multicenter infrastructure towards implementation of breast cancer genomic analyses in the clinical routine. *Genome Med* 2015, **7**:20](http://genomemedicine.com/content/7/1/20)
