@@ -42,7 +42,7 @@ Details
 Specifically, the script does the following (see [SAM format specification](http://samtools.github.io/hts-specs/SAMv1.pdf)
 for details on the fields in capital letters):
 
-- Fixes a bug in TopHat (unfixed as of v2.0.14):
+- Fixes wrong flags resulting from a bug in TopHat (unfixed as of v2.0.14):
   * For paired reads where both reads are unmapped, TopHat does not set the 0x8 flag ("mate is unmapped") on either read.
 
 - Removes /1 and /2 suffixes from read names (QNAME), if present.
