@@ -2,8 +2,10 @@ TopHat-Recondition
 ==================
 
 tophat-recondition (formally known as fix_tophat_unmapped_reads) modifies unmapped TopHat reads (contained in *unmapped.bam*) to make them compatible with downstream tools
-(e.g., the Picard suite, samtools, GATK).  It also works around a bug in TopHat where
-the "mate is unmapped" SAM flag is not set on any reads in the unmapped.bam file.
+(e.g., the Picard suite, samtools, GATK).  It also works around bugs in TopHat:
+
+- the "mate is unmapped" SAM flag is not set on any reads in the unmapped.bam file ([TopHat issue #3](https://github.com/infphilo/tophat/issues/3))
+- the mapped mate of an unmapped read can be absent from accepted_hits.bam, creating a mismatch between the file and the unmapped read's flags ([TopHat issue #16](https://github.com/infphilo/tophat/issues/16))
 
 This script was developed as part of a PhD research project in the
 [laboratory of Lao H. Saal, Translational Oncogenomics Unit, Department of Oncology and Pathology, Lund University, Sweden](http://www.med.lu.se/english/klinvetlund/oncology_and_pathology/research/canceromics_branch/research_units/translational_oncogenomics/).
@@ -54,6 +56,14 @@ for details on the fields in capital letters):
   * RNEXT: RNAME of the paired read
   * POS:   POS of the paired read
   * PNEXT: 0
+
+- For unmapped reads with missing mapped mates, unset the mate-related flags to effectively make them unpaired.  The following flags are unset:
+  * 0x1  (mate is paired)
+  * 0x2  (mate in proper pair)
+  * 0x8  (mate is unmapped)
+  * 0x20 (mate is reversed)
+  * 0x40 (first in pair)
+  * 0x80 (Second in pair)
 
 Examples of error messages emitted by downstream tools when trying to process unmapped reads without some or all of these
 modifications can be found in [this thread in the SEQanswers forum](http://seqanswers.com/forums/showthread.php?t=28155),

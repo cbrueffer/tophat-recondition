@@ -1,8 +1,14 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [Unreleased][unreleased]
+## [0.3] - 2015-08-13
 ### Added
+- Fixed an issue with unmapped reads which have a mapped mate.  Some of these reads
+  do not have an actual mate in the TopHat BAM files (TopHat seems to discard them),
+  thus leading to errors in downstream tools.  For these unmapped reads, reset the
+  flags to effectively make them singletons.
+  This has been reported as TopHat issue #16: https://github.com/infphilo/tophat/issues/16
+  Reported and tested by: Chris Cole (@drchriscole at GitHub)
 - A SAM PG header is appended to the *unmapped_fixup.bam* file to note processing by this software.
 - Added CHANGELOG.md (this file).
 

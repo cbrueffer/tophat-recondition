@@ -55,14 +55,28 @@ def get_index_pos(index, read):
         return None
 
 
+def unpair_read(read):
+    """Makes read unpaired by resetting all mate-related flags."""
+    read.is_paired = False
+    read.is_proper_pair = False
+    read.mate_is_reverse = False
+    read.mate_is_unmapped = False
+    read.is_read1 = False
+    read.is_read2 = False
+    return read
+
+
 def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
                        unmapped_file="unmapped.bam", cmdline=""):
-    # Fix things that relate to all unmapped reads.
     unmapped_dict = {}
     unmapped_index = {}
+    unmapped_with_mapped_mate = {}
+
     with pysam.Samfile(os.path.join(path, unmapped_file)) as bam_unmapped:
         unmapped_reads = list(bam_unmapped.fetch(until_eof=True))
         unmapped_header = bam_unmapped.header
+
+        # Fix things that relate to all unmapped reads.
         for i in range(len(unmapped_reads)):
             read = unmapped_reads[i]
 
@@ -80,6 +94,11 @@ def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
                 unmapped_dict[read.qname] = i
 
             read.mapq = 0
+
+            # Record all unmapped reads with mapped mate, so we can check
+            # for the mate's existence when we traverse the mapped file.
+            if not read.mate_is_unmapped:
+                unmapped_with_mapped_mate[read.qname] = i
 
             unmapped_reads[i] = read
 
@@ -101,6 +120,15 @@ def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
                         unmapped.pnext = 0
 
                         unmapped_reads[i] = unmapped
+
+                if mapped.qname in unmapped_with_mapped_mate:
+                    unmapped_with_mapped_mate.pop(mapped.qname, None)
+
+        # Reset unmapped reads with "mate is mapped" bit set, but where the
+        # mapped mate is absent.  This works around TopHat issue #16
+        # https://github.com/infphilo/tophat/issues/16
+        for readidx in unmapped_with_mapped_mate.values():
+            unmapped_reads[readidx] = unpair_read(unmapped_reads[readidx])
 
         # for the output file, take the headers from the unmapped file
         base, ext = os.path.splitext(unmapped_file)
