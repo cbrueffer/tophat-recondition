@@ -86,7 +86,8 @@ def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
 
             unmapped_index[read.qname] = i
 
-            # work around "mate is unmapped" bug in TopHat
+            # Work around "mate is unmapped" bug in TopHat (issue #3).
+            # https://github.com/infphilo/tophat/issues/3
             if read.qname in unmapped_dict:
                 unmapped_reads[unmapped_dict[read.qname]].mate_is_unmapped = True
                 read.mate_is_unmapped = True
