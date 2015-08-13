@@ -131,10 +131,10 @@ def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
         for readidx in unmapped_with_mapped_mate.values():
             unmapped_reads[readidx] = unpair_read(unmapped_reads[readidx])
 
-        # for the output file, take the headers from the unmapped file
         base, ext = os.path.splitext(unmapped_file)
         out_filename = "".join([base, "_fixup", ext])
 
+    # For the output file, take the headers from the unmapped file.
     fixup_header = unmapped_header
     fixup_header['PG'].append({'ID': 'TopHat-Recondition',
                                'VN': VERSION,
