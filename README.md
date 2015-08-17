@@ -5,10 +5,10 @@ tophat-recondition (formally known as fix_tophat_unmapped_reads) modifies unmapp
 (e.g., the Picard suite, samtools, GATK).  It also works around bugs in TopHat:
 
 - the "mate is unmapped" SAM flag is not set on any reads in the unmapped.bam file ([TopHat issue #3](https://github.com/infphilo/tophat/issues/3))
-- the mapped mate of an unmapped read can be absent from accepted_hits.bam, creating a mismatch between the file and the unmapped read's flags ([TopHat issue #16](https://github.com/infphilo/tophat/issues/16))
+- the mapped mate of an unmapped read can be absent from *accepted_hits.bam*, creating a mismatch between the file and the unmapped read's flags ([TopHat issue #16](https://github.com/infphilo/tophat/issues/16))
 
 This software was developed as part of a PhD research project in the
-[laboratory of Lao H. Saal, Translational Oncogenomics Unit, Department of Oncology and Pathology, Lund University, Sweden](http://www.med.lu.se/english/klinvetlund/oncology_and_pathology/research/canceromics_branch/research_units/translational_oncogenomics/).
+[laboratory of Lao H. Saal, Translational Oncogenomics Unit, Department of Oncology and Pathology, Lund University, Sweden](http://www.med.lu.se/saalgroup).
 
 
 Requirements
@@ -26,10 +26,10 @@ Usage:
 
 tophat-recondition.py [-hv] tophat_output_dir [result_dir]
 
--h                 print this usage text and exit
--v                 print the script name and version, and exit
+-h                 print this usage text and exit (optional)
+-v                 print the script name and version, and exit (optional)
 tophat_output_dir: directory containing accepted_hits.bam and unmapped.bam
-result_dir:        directory to write unmapped_fixup.bam to (default: tophat_output_dir)
+result_dir:        directory to write unmapped_fixup.bam to (optional, default: tophat_output_dir)
 ```
 
 Please make sure *tophat_output_dir* contains both, the *accepted_hits.bam* and *unmapped.bam* file.  The fixed
