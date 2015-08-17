@@ -43,7 +43,7 @@ except ImportError:
     print('Cannot import the pysam package; please make sure it is installed.\n')
     sys.exit(1)
 
-VERSION = "0.3"
+VERSION = "0.4"
 
 
 def get_index_pos(index, read):
