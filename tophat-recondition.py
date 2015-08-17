@@ -48,11 +48,7 @@ VERSION = "0.3"
 
 def get_index_pos(index, read):
     """Returns the position of a read in the index or None."""
-
-    if read.qname in index:
-        return index[read.qname]
-    else:
-        return None
+    return index[read.qname] if read.qname in index else None
 
 
 def unpair_read(read):
