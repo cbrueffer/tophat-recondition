@@ -62,6 +62,23 @@ def unpair_read(read):
     return read
 
 
+def mapped_to_unmapped_tid(mapped_file, unmapped_file, mapped_tid):
+    """Map chromosome TIDs from mapped to unmapped file."""
+    mapped_rname = mapped_file.getrname(mapped_tid)
+    return unmapped_file.gettid(mapped_rname)
+
+
+def unmapped_with_mapped_mate_standardize_flags(unmapped, bam_mapped, mapped_tid):
+    """For unmapped reads with mapped mate, give some field more
+    values downstream are more prone to accept."""
+    unmapped_new_tid = translate_tid(mapped_tid)
+    unmapped.tid = unmapped_new_tid
+    unmapped.rnext = unmapped_new_tid
+    unmapped.pos = mapped.pos
+    unmapped.pnext = 0
+    return read
+
+
 def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
                        unmapped_file="unmapped.bam", cmdline=""):
     unmapped_dict = {}
@@ -108,18 +125,9 @@ def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
                 if mapped.mate_is_unmapped:
                     i = get_index_pos(unmapped_index, mapped)
                     if i is not None:
-                        unmapped = unmapped_reads[i]
-
-                        # map chromosome TIDs from mapped to unmapped file
-                        mapped_rname = bam_mapped.getrname(mapped.tid)
-                        unmapped_new_tid = bam_unmapped.gettid(mapped_rname)
-
-                        unmapped.tid = unmapped_new_tid
-                        unmapped.rnext = unmapped_new_tid
-                        unmapped.pos = mapped.pos
-                        unmapped.pnext = 0
-
-                        unmapped_reads[i] = unmapped
+                        unmapped_reads[i] = unmapped_with_mapped_mate_standardize_flags(unmapped_reads[i],
+                                                                                        bam_mapped,
+                                                                                        mapped.tid)
 
                 if mapped.qname in unmapped_with_mapped_mate:
                     unmapped_with_mapped_mate.pop(mapped.qname, None)
