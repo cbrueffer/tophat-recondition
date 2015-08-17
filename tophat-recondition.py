@@ -95,13 +95,16 @@ def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
                 unmapped_dict[read.qname] = i
 
             read.mapq = 0
+            unmapped_reads[i] = read
 
-            # Record all unmapped reads with mapped mate, so we can check
-            # for the mate's existence when we traverse the mapped file.
+        # Iterate through the unmapped reads again to record all unmapped reads
+        # with mapped mate, so we can check for the mate's existence when we traverse
+        # the mapped file.
+        # This cannot be done in the same iteration as prviously, or it would
+        # collide with the fixes above and record false positives.
+        for i, read in enumerate(unmapped_reads):
             if not read.mate_is_unmapped:
                 unmapped_with_mapped_mate[read.qname] = i
-
-            unmapped_reads[i] = read
 
         # Fix things that relate only to unmapped reads with a mapped mate.
         with pysam.Samfile(os.path.join(path, mapped_file)) as bam_mapped:
