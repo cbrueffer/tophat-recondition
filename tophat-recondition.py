@@ -209,11 +209,11 @@ def usage(scriptname, errcode=errno.EINVAL):
     """Prints the usage text and exits with the specified error code."""
     print("Usage:\n")
     print(scriptname, "[-hv] tophat_output_dir [result_dir]\n")
-    print("-h                 print this usage text and exit")
-    print("-l                 log file (default: result_dir/tophat-recondition.log")
-    print("-v                 print the script name and version, and exit")
+    print("-h                 print this usage text and exit (optional)")
+    print("-l                 log file (optional, default: result_dir/tophat-recondition.log")
+    print("-v                 print the script name and version, and exit (optional)")
     print("tophat_output_dir: directory containing accepted_hits.bam and unmapped.bam")
-    print("result_dir:        directory to write unmapped_fixup.bam to (default: tophat_output_dir)")
+    print("result_dir:        directory to write unmapped_fixup.bam to (optional, default: tophat_output_dir)")
     sys.exit(errcode)
 
 
