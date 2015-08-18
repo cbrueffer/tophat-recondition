@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Added logging support.  A log file different from the default can be
   specified with the -l flag.
+- Added a -q (quiet) option that suppresses console output.
 
 ### Changed
 - Lots of internal refactoring.

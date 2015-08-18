@@ -51,15 +51,11 @@ LOG_FORMATTER = logging.Formatter("%(asctime)s - %(message)s", "%Y-%m-%d %H:%M:%
 
 
 def init_logger():
-    """Initializes a logger that emits to the console and a string buffer."""
+    """Initializes a logger that emits into a string buffer."""
     from StringIO import StringIO
 
     logger = logging.getLogger("")
     logger.setLevel(DEFAULT_LOG_LEVEL)
-
-    cons_handler = logging.StreamHandler()
-    cons_handler.setFormatter(LOG_FORMATTER)
-    logger.addHandler(cons_handler)
 
     # Temporarily log to a buffer, until we know where to write the log to.
     logbuffer = StringIO()
@@ -67,6 +63,14 @@ def init_logger():
     temp_handler.setFormatter(LOG_FORMATTER)
     logger.addHandler(temp_handler)
     return logger, temp_handler, logbuffer
+
+
+def logger_add_console_handler(logger):
+    """Adds a handler for logging to the console."""
+    cons_handler = logging.StreamHandler()
+    cons_handler.setFormatter(LOG_FORMATTER)
+    logger.addHandler(cons_handler)
+    return logger
 
 
 def logger_add_file_handler(logger, temp_handler, logbuffer, logfile):
@@ -208,9 +212,10 @@ def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
 def usage(scriptname, errcode=errno.EINVAL):
     """Prints the usage text and exits with the specified error code."""
     print("Usage:\n")
-    print(scriptname, "[-hv] [-l logfile] tophat_output_dir [result_dir]\n")
+    print(scriptname, "[-hqv] [-l logfile] tophat_output_dir [result_dir]\n")
     print("-h                 print this usage text and exit (optional)")
     print("-l                 log file (optional, default: result_dir/tophat-recondition.log)")
+    print("-q                 quiet mode, no console output (optional)")
     print("-v                 print the script name and version, and exit (optional)")
     print("tophat_output_dir: directory containing accepted_hits.bam and unmapped.bam")
     print("result_dir:        directory to write unmapped_fixup.bam to (optional, default: tophat_output_dir)")
@@ -223,12 +228,9 @@ if __name__ == "__main__":
     scriptname = os.path.basename(sys.argv[0])
     cmdline = " ".join(sys.argv)
     logger, temp_handler, logbuffer = init_logger()
-    logger.info("Starting run of tophat-recondition %s" % VERSION)
-    logger.info("Command: %s" % cmdline)
-    logger.info("Current working directory: %s" % os.getcwd())
 
     try:
-        opts, args = getopt.gnu_getopt(sys.argv[1:], "dhl:v")
+        opts, args = getopt.gnu_getopt(sys.argv[1:], "dhl:qv")
     except getopt.GetoptError as err:
         # print help information and exit
         print(str(err), file=sys.stderr)
@@ -236,6 +238,7 @@ if __name__ == "__main__":
 
     debug = False
     logfile = None
+    quiet = False
     for o, a in opts:
         if o in "-d":
             debug = True
@@ -243,12 +246,21 @@ if __name__ == "__main__":
             usage(scriptname, errcode=0)
         elif o in "-l":
             logfile = a
+        elif o in "-q":
+            quiet = True
         elif o in "-v":
             print(scriptname, VERSION)
             sys.exit(0)
         else:
             assert False, "unhandled option"
             sys.exit(errno.EINVAL)
+
+    if not quiet:
+          logger_add_console_handler(logger)
+
+    logger.info("Starting run of tophat-recondition %s" % VERSION)
+    logger.info("Command: %s" % cmdline)
+    logger.info("Current working directory: %s" % os.getcwd())
 
     if len(args) == 0 or len(args) > 2:
         usage(scriptname, errcode=errno.EINVAL)

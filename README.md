@@ -28,6 +28,7 @@ tophat-recondition.py [-hv] [-l logfile] tophat_output_dir [result_dir]
 
 -h                 print this usage text and exit (optional)
 -l                 log file (optional, default: result_dir/tophat-recondition.log)
+-q                 quiet mode, no console output (optional)
 -v                 print the script name and version, and exit (optional)
 tophat_output_dir: directory containing accepted_hits.bam and unmapped.bam
 result_dir:        directory to write unmapped_fixup.bam to (optional, default: tophat_output_dir)
