@@ -1,6 +1,19 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [0.4] - 2015-08-18
+### Added
+- Added logging support.  A log file different from the default can be
+  specified with the -l flag.
+
+### Changed
+- Lots of internal refactoring.
+
+### Fixed
+- Fixed a problem with the "unmapped reads which have a mapped mate" fix in
+  version 0.3.  This fix collided with the 0x8 flag fix, resulting in overzealous
+  unpairing of unmapped reads.
+
 ## [0.3] - 2015-08-13
 ### Added
 - Fixed an issue with unmapped reads which have a mapped mate.  Some of these reads
@@ -31,5 +44,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 - First release of the software as *fix_tophat_unmapped_reads*.
 
-[unreleased]: https://github.com/cbrueffer/tophat-recondition/compare/v0.2...HEAD
+[unreleased]: https://github.com/cbrueffer/tophat-recondition/compare/v0.4...HEAD
+[0.4]: https://github.com/cbrueffer/tophat-recondition/compare/v0.3...v0.4
+[0.3]: https://github.com/cbrueffer/tophat-recondition/compare/v0.2...v0.3
 [0.2]: https://github.com/cbrueffer/tophat-recondition/compare/v0.1...v0.2
