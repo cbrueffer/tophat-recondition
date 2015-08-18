@@ -51,8 +51,7 @@ LOG_FORMATTER = logging.Formatter("%(asctime)s - %(message)s", "%Y-%m-%d %H:%M:%
 
 
 def init_logger():
-    """Initializes a logger.  If logfile is given, the logger will log to
-    the file, otherwise to the console."""
+    """Initializes a logger that emits to the console and a string buffer."""
     from StringIO import StringIO
 
     logger = logging.getLogger("")
@@ -62,7 +61,7 @@ def init_logger():
     cons_handler.setFormatter(LOG_FORMATTER)
     logger.addHandler(cons_handler)
 
-    # Temporarily log to a buffer, until we know where to write the log.
+    # Temporarily log to a buffer, until we know where to write the log to.
     logbuffer = StringIO()
     temp_handler = logging.StreamHandler(logbuffer)
     temp_handler.setFormatter(LOG_FORMATTER)
@@ -122,6 +121,8 @@ def unmapped_with_mapped_mate_standardize_flags(unmapped, mapped, bam_unmapped, 
 
 def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
                        unmapped_file="unmapped.bam", cmdline="", logger=None):
+    """Corrects various fields and flags of the unmapped reads to make them
+    compatible with downstream processing tools."""
     unmapped_dict = {}
     unmapped_index = {}
     unmapped_with_mapped_mate = {}
@@ -205,6 +206,7 @@ def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
 
 
 def usage(scriptname, errcode=errno.EINVAL):
+    """Prints the usage text and exits with the specified error code."""
     print("Usage:\n")
     print(scriptname, "[-hv] tophat_output_dir [result_dir]\n")
     print("-h                 print this usage text and exit")
