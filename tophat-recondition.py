@@ -35,6 +35,7 @@ Homepage: https://github.com/cbrueffer/tophat-recondition
 from __future__ import print_function
 
 import errno
+import logging
 import os
 import sys
 try:
@@ -44,6 +45,46 @@ except ImportError:
     sys.exit(1)
 
 VERSION = "0.4"
+DEFAULT_LOG_NAME = "tophat-recondition.log"
+DEFAULT_LOG_LEVEL = logging.INFO
+LOG_FORMATTER = logging.Formatter("%(asctime)s - %(message)s", "%Y-%m-%d %H:%M:%S")
+
+
+def init_logger():
+    """Initializes a logger.  If logfile is given, the logger will log to
+    the file, otherwise to the console."""
+    from StringIO import StringIO
+
+    logger = logging.getLogger("")
+    logger.setLevel(DEFAULT_LOG_LEVEL)
+
+    cons_handler = logging.StreamHandler()
+    cons_handler.setFormatter(LOG_FORMATTER)
+    logger.addHandler(cons_handler)
+
+    # Temporarily log to a buffer, until we know where to write the log.
+    logbuffer = StringIO()
+    temp_handler = logging.StreamHandler(logbuffer)
+    temp_handler.setFormatter(LOG_FORMATTER)
+    logger.addHandler(temp_handler)
+    return logger, temp_handler, logbuffer
+
+
+def logger_add_file_handler(logger, temp_handler, logbuffer, logfile):
+    """Writes the temporary log buffer to the log file, removes the
+    temp handler and adds the correct log file handler."""
+    import shutil
+
+    logbuffer.seek(0)
+    with open(logfile, 'w') as log:
+        shutil.copyfileobj(logbuffer, log)
+    logger.removeHandler(temp_handler)
+
+    # Add the proper file handler.
+    file_handler = logging.FileHandler(logfile)
+    file_handler.setFormatter(LOG_FORMATTER)
+    logger.addHandler(file_handler)
+    return logger
 
 
 def get_index_pos(index, read):
@@ -68,24 +109,27 @@ def mapped_to_unmapped_tid(mapped_file, unmapped_file, mapped_tid):
     return unmapped_file.gettid(mapped_rname)
 
 
-def unmapped_with_mapped_mate_standardize_flags(unmapped, bam_mapped, mapped_tid):
+def unmapped_with_mapped_mate_standardize_flags(unmapped, mapped, bam_unmapped, bam_mapped):
     """For unmapped reads with mapped mate, give some field more
     values downstream are more prone to accept."""
-    unmapped_new_tid = translate_tid(mapped_tid)
+    unmapped_new_tid = mapped_to_unmapped_tid(bam_unmapped, bam_mapped, mapped.tid)
     unmapped.tid = unmapped_new_tid
     unmapped.rnext = unmapped_new_tid
     unmapped.pos = mapped.pos
     unmapped.pnext = 0
-    return read
+    return unmapped
 
 
 def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
-                       unmapped_file="unmapped.bam", cmdline=""):
+                       unmapped_file="unmapped.bam", cmdline="", logger=None):
     unmapped_dict = {}
     unmapped_index = {}
     unmapped_with_mapped_mate = {}
 
-    with pysam.Samfile(os.path.join(path, unmapped_file)) as bam_unmapped:
+    infile_unmapped = os.path.join(path, unmapped_file)
+    logger.info("Opening unmapped SAM file: %s" % infile_unmapped)
+    with pysam.Samfile(infile_unmapped) as bam_unmapped:
+        logger.info("Loading unmapped SAM file into memory: %s" % infile_unmapped)
         unmapped_reads = list(bam_unmapped.fetch(until_eof=True))
         unmapped_header = bam_unmapped.header
 
@@ -102,6 +146,7 @@ def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
             # Work around "mate is unmapped" bug in TopHat (issue #3).
             # https://github.com/infphilo/tophat/issues/3
             if read.qname in unmapped_dict:
+                logger.info("Setting missing 0x8 flag for unmapped read-pair: %s" % read.qname)
                 unmapped_reads[unmapped_dict[read.qname]].mate_is_unmapped = True
                 read.mate_is_unmapped = True
             else:
@@ -120,14 +165,19 @@ def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
                 unmapped_with_mapped_mate[read.qname] = i
 
         # Fix things that relate only to unmapped reads with a mapped mate.
-        with pysam.Samfile(os.path.join(path, mapped_file)) as bam_mapped:
+        infile_mapped = os.path.join(path, mapped_file)
+        logger.info("Opening mapped SAM file: %s" % infile_mapped)
+        with pysam.Samfile(infile_mapped) as bam_mapped:
             for mapped in bam_mapped:
                 if mapped.mate_is_unmapped:
                     i = get_index_pos(unmapped_index, mapped)
                     if i is not None:
-                        unmapped_reads[i] = unmapped_with_mapped_mate_standardize_flags(unmapped_reads[i],
-                                                                                        bam_mapped,
-                                                                                        mapped.tid)
+                        unmapped = unmapped_reads[i]
+                        logger.info("Standardizing flags of unmapped read: %s" % unmapped.qname)
+                        unmapped_reads[i] = unmapped_with_mapped_mate_standardize_flags(unmapped,
+                                                                                        mapped,
+                                                                                        bam_unmapped,
+                                                                                        bam_mapped)
 
                 if mapped.qname in unmapped_with_mapped_mate:
                     unmapped_with_mapped_mate.pop(mapped.qname, None)
@@ -135,7 +185,8 @@ def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
         # Reset unmapped reads with "mate is mapped" bit set, but where the
         # mapped mate is absent.  This works around TopHat issue #16
         # https://github.com/infphilo/tophat/issues/16
-        for readidx in unmapped_with_mapped_mate.values():
+        for readname, readidx in unmapped_with_mapped_mate.iteritems():
+            logger.info("Mapped mate not found, unpairing unmapped read: %s" % readname)
             unmapped_reads[readidx] = unpair_read(unmapped_reads[readidx])
 
         base, ext = os.path.splitext(unmapped_file)
@@ -146,8 +197,9 @@ def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
     fixup_header['PG'].append({'ID': 'TopHat-Recondition',
                                'VN': VERSION,
                                'CL': cmdline})
-    with pysam.Samfile(os.path.join(outdir, out_filename), "wb",
-                       header=fixup_header) as bam_out:
+    outfile = os.path.join(outdir, out_filename)
+    logger.info("Writing corrected SAM file: %s" % outfile)
+    with pysam.Samfile(outfile, "wb", header=fixup_header) as bam_out:
         for read in unmapped_reads:
             bam_out.write(read)
 
@@ -156,6 +208,7 @@ def usage(scriptname, errcode=errno.EINVAL):
     print("Usage:\n")
     print(scriptname, "[-hv] tophat_output_dir [result_dir]\n")
     print("-h                 print this usage text and exit")
+    print("-l                 log file (default: result_dir/tophat-recondition.log")
     print("-v                 print the script name and version, and exit")
     print("tophat_output_dir: directory containing accepted_hits.bam and unmapped.bam")
     print("result_dir:        directory to write unmapped_fixup.bam to (default: tophat_output_dir)")
@@ -167,20 +220,27 @@ if __name__ == "__main__":
 
     scriptname = os.path.basename(sys.argv[0])
     cmdline = " ".join(sys.argv)
+    logger, temp_handler, logbuffer = init_logger()
+    logger.info("Starting run of tophat-recondition %s" % VERSION)
+    logger.info("Command: %s" % cmdline)
+    logger.info("Current working directory: %s" % os.getcwd())
 
     try:
-        opts, args = getopt.gnu_getopt(sys.argv[1:], "dhv")
+        opts, args = getopt.gnu_getopt(sys.argv[1:], "dhlv")
     except getopt.GetoptError as err:
         # print help information and exit
         print(str(err), file=sys.stderr)
         usage(scriptname, errcode=errno.EINVAL)
 
     debug = False
+    logfile = None
     for o, a in opts:
         if o in "-d":
             debug = True
         elif o in "-h":
             usage(scriptname, errcode=0)
+        elif o in "-l":
+            logfile = a
         elif o in "-v":
             print(scriptname, VERSION)
             sys.exit(0)
@@ -193,28 +253,39 @@ if __name__ == "__main__":
 
     bamdir = args.pop(0)
     if not os.path.isdir(bamdir):
-        print("Specified tophat_output_dir does not exist or is not a directory: %s" % bamdir, file=sys.stderr)
+        logger.error("Specified tophat_output_dir does not exist or is not a directory: %s" % bamdir)
         sys.exit(errno.EINVAL)
 
     if len(args) > 0:
         resultdir = args.pop(0)
         if not os.path.isdir(resultdir):
-            print("Specified result_dir does not exist or is not a directory: %s" % resultdir, file=sys.stderr)
+            logger.error("Specified result_dir does not exist or is not a directory: %s" % resultdir)
             sys.exit(errno.EINVAL)
     else:
         resultdir = bamdir
 
+    if logfile is None:
+        logfile = os.path.join(resultdir, DEFAULT_LOG_NAME)
     try:
-        fix_unmapped_reads(bamdir, resultdir, cmdline=cmdline)
+        logger = logger_add_file_handler(logger, temp_handler, logbuffer, logfile)
+    except Exception as e:
+        logger.error("Cannot open log file %s: %s" % (logfile, str(e)))
+        sys.exit(1)
+
+    logger.info("Writing logfile: %s" % logfile)
+    try:
+        fix_unmapped_reads(bamdir, resultdir, cmdline=cmdline, logger=logger)
+        logger.info("Program finished successfully.")
     except KeyboardInterrupt:
+        logger.info("Program interrupted by user, exiting.")
         print("Program interrupted by user, exiting.")
         sys.exit(errno.EINTR)
     except Exception as e:
         if debug:
             import traceback
-            print(traceback.format_exc(), file=sys.stderr)
+            logger.error(traceback.format_exc())
 
-        print("Error: %s" % str(e), file=sys.stderr)
+        logger.error("Error: %s" % str(e))
         if hasattr(e, "errno"):
             sys.exit(e.errno)
         else:
