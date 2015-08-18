@@ -228,7 +228,7 @@ if __name__ == "__main__":
     logger.info("Current working directory: %s" % os.getcwd())
 
     try:
-        opts, args = getopt.gnu_getopt(sys.argv[1:], "dhlv")
+        opts, args = getopt.gnu_getopt(sys.argv[1:], "dhl:v")
     except getopt.GetoptError as err:
         # print help information and exit
         print(str(err), file=sys.stderr)
