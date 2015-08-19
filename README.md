@@ -2,7 +2,7 @@ TopHat-Recondition
 ==================
 
 tophat-recondition (formally known as fix_tophat_unmapped_reads) modifies unmapped TopHat reads (contained in *unmapped.bam*) to make them compatible with downstream tools
-(e.g., the Picard suite, samtools, GATK).  It also works around bugs in TopHat:
+(e.g., the Picard suite, samtools, GATK) ([TopHat issue #17](https://github.com/infphilo/tophat/issues/17)).  It also works around bugs in TopHat:
 
 - the "mate is unmapped" SAM flag is not set on any reads in the unmapped.bam file ([TopHat issue #3](https://github.com/infphilo/tophat/issues/3))
 - the mapped mate of an unmapped read can be absent from *accepted_hits.bam*, creating a mismatch between the file and the unmapped read's flags ([TopHat issue #16](https://github.com/infphilo/tophat/issues/16))
