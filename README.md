@@ -31,7 +31,8 @@ tophat-recondition.py [-hv] [-l logfile] tophat_output_dir [result_dir]
 -q                 quiet mode, no console output (optional)
 -v                 print the script name and version, and exit (optional)
 tophat_output_dir: directory containing accepted_hits.bam and unmapped.bam
-result_dir:        directory to write unmapped_fixup.bam to (optional, default: tophat_output_dir)
+result_dir:        directory to write unmapped_fixup.bam to (optional,
+                   default: tophat_output_dir)
 ```
 
 Please make sure *tophat_output_dir* contains both, the *accepted_hits.bam* and *unmapped.bam* file.  The fixed
