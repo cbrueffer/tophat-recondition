@@ -163,7 +163,7 @@ def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
         # Iterate through the unmapped reads again to record all unmapped reads
         # with mapped mate, so we can check for the mate's existence when we traverse
         # the mapped file.
-        # This cannot be done in the same iteration as prviously, or it would
+        # This cannot be done in the same iteration as previously, or it would
         # collide with the fixes above and record false positives.
         for i, read in enumerate(unmapped_reads):
             if not read.mate_is_unmapped:
