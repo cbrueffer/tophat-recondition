@@ -112,9 +112,9 @@ def mapped_to_unmapped_tid(mapped_file, unmapped_file, mapped_tid):
     return unmapped_file.gettid(mapped_rname)
 
 
-def unmapped_with_mapped_mate_standardize_flags(unmapped, mapped, bam_unmapped, bam_mapped):
-    """For unmapped reads with mapped mate, give some field more
-    values downstream are more prone to accept."""
+def unmapped_with_mapped_mate_standardize_fields(unmapped, mapped, bam_unmapped, bam_mapped):
+    """For unmapped reads with mapped mate, give some fields
+    values that downstream tools are more prone to accept."""
     unmapped_new_tid = mapped_to_unmapped_tid(bam_unmapped, bam_mapped, mapped.tid)
     unmapped.tid = unmapped_new_tid
     unmapped.rnext = unmapped_new_tid
@@ -179,10 +179,10 @@ def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
                     if i is not None:
                         unmapped = unmapped_reads[i]
                         logger.info("Standardizing flags of unmapped read: %s" % unmapped.qname)
-                        unmapped_reads[i] = unmapped_with_mapped_mate_standardize_flags(unmapped,
-                                                                                        mapped,
-                                                                                        bam_unmapped,
-                                                                                        bam_mapped)
+                        unmapped_reads[i] = unmapped_with_mapped_mate_standardize_fields(unmapped,
+                                                                                         mapped,
+                                                                                         bam_unmapped,
+                                                                                         bam_mapped)
 
                 if mapped.qname in unmapped_with_mapped_mate:
                     unmapped_with_mapped_mate.pop(mapped.qname, None)
