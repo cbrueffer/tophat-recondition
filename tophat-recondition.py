@@ -143,7 +143,7 @@ def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
             read = unmapped_reads[i]
 
             # remove /1 and /2 suffixes
-            if read.qname.find("/") != -1:
+            if "/" in read.qname:
                 read.qname = read.qname[:-2]
 
             unmapped_index[read.qname] = i
