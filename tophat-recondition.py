@@ -132,9 +132,9 @@ def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
     unmapped_with_mapped_mate = {}
 
     infile_unmapped = os.path.join(path, unmapped_file)
-    logger.info("Opening unmapped SAM file: %s" % infile_unmapped)
+    logger.info("Opening unmapped BAM file: %s" % infile_unmapped)
     with pysam.Samfile(infile_unmapped) as bam_unmapped:
-        logger.info("Loading unmapped SAM file into memory: %s" % infile_unmapped)
+        logger.info("Loading unmapped BAM file into memory: %s" % infile_unmapped)
         unmapped_reads = list(bam_unmapped.fetch(until_eof=True))
         unmapped_header = bam_unmapped.header
 
@@ -171,7 +171,7 @@ def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
 
         # Fix things that relate only to unmapped reads with a mapped mate.
         infile_mapped = os.path.join(path, mapped_file)
-        logger.info("Opening mapped SAM file: %s" % infile_mapped)
+        logger.info("Opening mapped BAM file: %s" % infile_mapped)
         with pysam.Samfile(infile_mapped) as bam_mapped:
             for mapped in bam_mapped:
                 if mapped.mate_is_unmapped:
@@ -203,7 +203,7 @@ def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
                                'VN': VERSION,
                                'CL': cmdline})
     outfile = os.path.join(outdir, out_filename)
-    logger.info("Writing corrected SAM file: %s" % outfile)
+    logger.info("Writing corrected BAM file: %s" % outfile)
     with pysam.Samfile(outfile, "wb", header=fixup_header) as bam_out:
         for read in unmapped_reads:
             bam_out.write(read)
