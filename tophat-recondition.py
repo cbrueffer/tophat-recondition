@@ -258,12 +258,12 @@ if __name__ == "__main__":
     if not quiet:
           logger_add_console_handler(logger)
 
+    if len(args) == 0 or len(args) > 2:
+        usage(scriptname, errcode=errno.EINVAL)
+
     logger.info("Starting run of tophat-recondition %s" % VERSION)
     logger.info("Command: %s" % cmdline)
     logger.info("Current working directory: %s" % os.getcwd())
-
-    if len(args) == 0 or len(args) > 2:
-        usage(scriptname, errcode=errno.EINVAL)
 
     bamdir = args.pop(0)
     if not os.path.isdir(bamdir):
