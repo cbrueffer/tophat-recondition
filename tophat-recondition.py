@@ -44,7 +44,7 @@ except ImportError:
     print('Cannot import the pysam package; please make sure it is installed.\n')
     sys.exit(1)
 
-VERSION = "0.4"
+VERSION = "1.0"
 DEFAULT_LOG_NAME = "tophat-recondition.log"
 DEFAULT_LOG_LEVEL = logging.INFO
 LOG_FORMATTER = logging.Formatter("%(asctime)s - %(message)s", "%Y-%m-%d %H:%M:%S")
