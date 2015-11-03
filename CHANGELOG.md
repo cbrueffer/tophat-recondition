@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [1.0] - 2015-11-03
+### Changed
+- Fixed log output to say BAM when BAM is meant.
+
+### Fixed
+- Do not print log output in case only the usage message is printed.
+
 ## [0.4] - 2015-08-18
 ### Added
 - Added logging support.  A log file different from the default can be
@@ -45,7 +52,8 @@ All notable changes to this project will be documented in this file.
 ### Added
 - First release of the software as *fix_tophat_unmapped_reads*.
 
-[unreleased]: https://github.com/cbrueffer/tophat-recondition/compare/v0.4...HEAD
+[unreleased]: https://github.com/cbrueffer/tophat-recondition/compare/v1.0...HEAD
+[1.0]: https://github.com/cbrueffer/tophat-recondition/compare/v0.4...v1.0
 [0.4]: https://github.com/cbrueffer/tophat-recondition/compare/v0.3...v0.4
 [0.3]: https://github.com/cbrueffer/tophat-recondition/compare/v0.2...v0.3
 [0.2]: https://github.com/cbrueffer/tophat-recondition/compare/v0.1...v0.2
