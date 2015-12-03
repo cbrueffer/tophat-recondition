@@ -71,11 +71,3 @@ for details on the fields in capital letters):
 Examples of error messages emitted by downstream tools when trying to process unmapped reads without some or all of these
 modifications can be found in [this thread in the SEQanswers forum](http://seqanswers.com/forums/showthread.php?t=28155),
 which lead to the development of this software.
-
-
-Citation
---------
-
-If you use this software in your research, please cite:
-
-[Saal et al.: The Sweden Cancerome Analysis Network - Breast (SCAN-B) Initiative: a large-scale multicenter infrastructure towards implementation of breast cancer genomic analyses in the clinical routine. *Genome Med* 2015, **7**:20](http://genomemedicine.com/content/7/1/20)
