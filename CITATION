@@ -11,7 +11,7 @@ A BibTeX entry for LaTeX users is:
   title = {{TopHat-Recondition: A post-processor for TopHat unmapped reads}},
   author = {Brueffer, Christian and Saal, Lao H},
   journal = {bioRxiv},
-  month = {10},
+  month = {12},
   year = {2015}
   doi = {10.1101/033530},
   url = {http://dx.doi.org/10.1101/033530},
