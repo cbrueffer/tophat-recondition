@@ -10,6 +10,8 @@ tophat-recondition is a post-processor for TopHat unmapped reads (contained in *
 This software was developed as part of a PhD research project in the
 [laboratory of Lao H. Saal, Translational Oncogenomics Unit, Department of Oncology and Pathology, Lund University, Sweden](http://www.med.lu.se/saalgroup).
 
+A detailed description of the software can be found in (Brueffer and Saal (2016))[http://dx.doi.org/10.1186/s12859-016-1058-x].
+
 
 Requirements
 ------------
@@ -71,3 +73,9 @@ for details on the fields in capital letters):
 Examples of error messages emitted by downstream tools when trying to process unmapped reads without some or all of these
 modifications can be found in [this thread in the SEQanswers forum](http://seqanswers.com/forums/showthread.php?t=28155),
 which lead to the development of this software.
+
+
+Citation
+--------
+
+If you use this software in your research and would like to cite it, please use the citation information in the (CITATION)[https://github.com/cbrueffer/tophat-recondition/blob/master/CITATION] file.

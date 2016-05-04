@@ -1,18 +1,18 @@
 To cite TopHat-Recondition in publications, please use:
 
-  Brueffer, C. and Saal, L. H. (2015).
+  Brueffer, C. and Saal, L. H. (2016).
   TopHat-Recondition: A post-processor for TopHat unmapped reads.
-  bioRxiv doi: http://dx.doi.org/10.1101/033530
+  BMC Bioinformatics. 2016;17:199. doi:10.1186/s12859-016-1058-x
 
 
 A BibTeX entry for LaTeX users is:
 
-@article{brueffer2015,
+@article{BruefferSaal2016,
   title = {{TopHat-Recondition: A post-processor for TopHat unmapped reads}},
   author = {Brueffer, Christian and Saal, Lao H},
-  journal = {bioRxiv},
-  month = {12},
-  year = {2015}
-  doi = {10.1101/033530},
-  url = {http://dx.doi.org/10.1101/033530},
+  journal = {BMC Bioinformatics},
+  month = {5},
+  year = {2016}
+  doi = {10.1186/s12859-016-1058-x},
+  url = {http://dx.doi.org/10.1186/s12859-016-1058-x},
 }
