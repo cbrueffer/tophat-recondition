@@ -10,7 +10,7 @@ tophat-recondition is a post-processor for TopHat unmapped reads (contained in *
 This software was developed as part of a PhD research project in the
 [laboratory of Lao H. Saal, Translational Oncogenomics Unit, Department of Oncology and Pathology, Lund University, Sweden](http://www.med.lu.se/saalgroup).
 
-A detailed description of the software can be found in (Brueffer and Saal (2016))[http://dx.doi.org/10.1186/s12859-016-1058-x].
+A detailed description of the software can be found in [Brueffer and Saal (2016)](http://dx.doi.org/10.1186/s12859-016-1058-x).
 
 
 Requirements
@@ -78,4 +78,4 @@ which lead to the development of this software.
 Citation
 --------
 
-If you use this software in your research and would like to cite it, please use the citation information in the (CITATION)[https://github.com/cbrueffer/tophat-recondition/blob/master/CITATION] file.
+If you use this software in your research and would like to cite it, please use the citation information in the [CITATION](https://github.com/cbrueffer/tophat-recondition/blob/master/CITATION) file.
