@@ -41,7 +41,8 @@ import sys
 try:
     import pysam
 except ImportError:
-    print('Cannot import the pysam package; please make sure it is installed.\n')
+    print('Cannot import the pysam package; please make sure it is installed.\n',
+          file=sys.stderr)
     sys.exit(1)
 
 VERSION = "1.0"
@@ -292,7 +293,7 @@ if __name__ == "__main__":
         logger.info("Program finished successfully.")
     except KeyboardInterrupt:
         logger.info("Program interrupted by user, exiting.")
-        print("Program interrupted by user, exiting.")
+        print("Program interrupted by user, exiting.", file=sys.stderr)
         sys.exit(errno.EINTR)
     except Exception as e:
         if debug:
