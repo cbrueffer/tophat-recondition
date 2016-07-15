@@ -16,7 +16,7 @@ A detailed description of the software can be found in [Brueffer and Saal (2016)
 Requirements
 ------------
 
-- Python 2 (>= 2.6) or Python 3
+- Python 2 (2.7 or 2.6 with argparse module) or Python 3
 - [pysam](https://github.com/pysam-developers/pysam)
 
 

@@ -1,6 +1,14 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [1.1] - 2016-xx-xx
+### Changed
+- Utilizes the argparse module for commandline parsing
+
+### Fixed
+- Fixed some issues under Python 3
+- Debug messages go to STDERR
+
 ## [1.0] - 2015-11-03
 ### Changed
 - Fixed log output to say BAM when BAM is meant.
@@ -52,7 +60,8 @@ All notable changes to this project will be documented in this file.
 ### Added
 - First release of the software as *fix_tophat_unmapped_reads*.
 
-[unreleased]: https://github.com/cbrueffer/tophat-recondition/compare/v1.0...HEAD
+[unreleased]: https://github.com/cbrueffer/tophat-recondition/compare/v1.1...HEAD
+[1.1]: https://github.com/cbrueffer/tophat-recondition/compare/v1.0...v1.1
 [1.0]: https://github.com/cbrueffer/tophat-recondition/compare/v0.4...v1.0
 [0.4]: https://github.com/cbrueffer/tophat-recondition/compare/v0.3...v0.4
 [0.3]: https://github.com/cbrueffer/tophat-recondition/compare/v0.2...v0.3

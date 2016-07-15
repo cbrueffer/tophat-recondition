@@ -41,11 +41,11 @@ import sys
 try:
     import pysam
 except ImportError:
-    print('Cannot import the pysam package; please make sure it is installed.\n',
+    print('Cannot import the pysam module; please make sure it is installed.\n',
           file=sys.stderr)
     sys.exit(1)
 
-VERSION = "1.0"
+VERSION = "1.1"
 DEFAULT_LOG_NAME = "tophat-recondition.log"
 DEFAULT_LOG_LEVEL = logging.INFO
 LOG_FORMATTER = logging.Formatter("%(asctime)s - %(message)s", "%Y-%m-%d %H:%M:%S")
@@ -53,7 +53,10 @@ LOG_FORMATTER = logging.Formatter("%(asctime)s - %(message)s", "%Y-%m-%d %H:%M:%
 
 def init_logger():
     """Initializes a logger that emits into a string buffer."""
-    from StringIO import StringIO
+    try:
+        import StringIO  # Python 2
+    except:
+        from io import StringIO  # Python 3
 
     logger = logging.getLogger("")
     logger.setLevel(DEFAULT_LOG_LEVEL)
@@ -191,7 +194,7 @@ def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
         # Reset unmapped reads with "mate is mapped" bit set, but where the
         # mapped mate is absent.  This works around TopHat issue #16
         # https://github.com/infphilo/tophat/issues/16
-        for readname, readidx in unmapped_with_mapped_mate.iteritems():
+        for readname, readidx in iter(unmapped_with_mapped_mate):
             logger.info("Mapped mate not found, unpairing unmapped read: %s" % readname)
             unmapped_reads[readidx] = unpair_read(unmapped_reads[readidx])
 
@@ -210,93 +213,64 @@ def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
             bam_out.write(read)
 
 
-def usage(scriptname, errcode=errno.EINVAL):
-    """Prints the usage text and exits with the specified error code."""
-    print("Usage:\n")
-    print(scriptname, "[-hqv] [-l logfile] tophat_output_dir [result_dir]\n")
-    print("-h                 print this usage text and exit (optional)")
-    print("-l                 log file (optional, default: result_dir/tophat-recondition.log)")
-    print("-q                 quiet mode, no console output (optional)")
-    print("-v                 print the script name and version, and exit (optional)")
-    print("tophat_output_dir: directory containing accepted_hits.bam and unmapped.bam")
-    print("result_dir:        directory to write unmapped_fixup.bam to (optional, default: tophat_output_dir)")
-    sys.exit(errcode)
-
-
 if __name__ == "__main__":
-    import getopt
+    try:
+        import argparse
+    except ImportError:
+        print('Cannot import the argparse module; please either install it, or \
+              upgrade to Python 2.7 or newer..\n', file=sys.stderr)
 
-    scriptname = os.path.basename(sys.argv[0])
     cmdline = " ".join(sys.argv)
+
     logger, temp_handler, logbuffer = init_logger()
 
-    try:
-        opts, args = getopt.gnu_getopt(sys.argv[1:], "dhl:qv")
-    except getopt.GetoptError as err:
-        # print help information and exit
-        print(str(err), file=sys.stderr)
-        usage(scriptname, errcode=errno.EINVAL)
+    parser = argparse.ArgumentParser(description='Post-process TopHat unmapped reads')
+    parser.add_argument("tophat_result_dir", help="directory containing accepted_hits.bam and unmapped.bam")
+    parser.add_argument("-r", "--result_dir", default=None,
+                        help="directory to write unmapped_fixup.bam to (default: tophat_output_dir)")
+    parser.add_argument("-l", "--logfile",
+                        help="log file (optional, (default: result_dir/tophat-recondition.log)")
+    parser.add_argument("-q", "--quiet", action="store_true", help="quiet mode, no console output")
+    parser.add_argument("-d", "--debug", action="store_true", help=argparse.SUPPRESS)
+    parser.add_argument("-v", "--version", action="version", version="%(prog)s {VERSION}")
+    args = parser.parse_args()
 
-    debug = False
-    logfile = None
-    quiet = False
-    for o, a in opts:
-        if o in "-d":
-            debug = True
-        elif o in "-h":
-            usage(scriptname, errcode=0)
-        elif o in "-l":
-            logfile = a
-        elif o in "-q":
-            quiet = True
-        elif o in "-v":
-            print(scriptname, VERSION)
-            sys.exit(0)
-        else:
-            assert False, "unhandled option"
-            sys.exit(errno.EINVAL)
-
-    if not quiet:
-          logger_add_console_handler(logger)
-
-    if len(args) == 0 or len(args) > 2:
-        usage(scriptname, errcode=errno.EINVAL)
+    if not args.quiet:
+        logger_add_console_handler(logger)
 
     logger.info("Starting run of tophat-recondition %s" % VERSION)
     logger.info("Command: %s" % cmdline)
     logger.info("Current working directory: %s" % os.getcwd())
 
-    bamdir = args.pop(0)
-    if not os.path.isdir(bamdir):
-        logger.error("Specified tophat_output_dir does not exist or is not a directory: %s" % bamdir)
+    if not os.path.isdir(args.tophat_result_dir):
+        logger.error("Specified tophat_output_dir does not exist or is not a directory: %s" % args.tophat_result_dir)
         sys.exit(errno.EINVAL)
 
-    if len(args) > 0:
-        resultdir = args.pop(0)
-        if not os.path.isdir(resultdir):
-            logger.error("Specified result_dir does not exist or is not a directory: %s" % resultdir)
-            sys.exit(errno.EINVAL)
+    if args.result_dir is None:
+        args.result_dir = args.tophat_result_dir  # set default
     else:
-        resultdir = bamdir
+        if not os.path.isdir(args.result_dir):
+            logger.error("Specified result_dir does not exist or is not a directory: %s" % args.result_dir)
+            sys.exit(errno.EINVAL)
 
-    if logfile is None:
-        logfile = os.path.join(resultdir, DEFAULT_LOG_NAME)
+    if args.logfile is None:
+        args.logfile = os.path.join(args.result_dir, DEFAULT_LOG_NAME)
     try:
-        logger = logger_add_file_handler(logger, temp_handler, logbuffer, logfile)
+        logger = logger_add_file_handler(logger, temp_handler, logbuffer, args.logfile)
     except Exception as e:
         logger.error("Cannot open log file %s: %s" % (logfile, str(e)))
         sys.exit(1)
 
-    logger.info("Writing logfile: %s" % logfile)
+    logger.info("Writing logfile: %s" % args.logfile)
     try:
-        fix_unmapped_reads(bamdir, resultdir, cmdline=cmdline, logger=logger)
+        fix_unmapped_reads(args.tophat_result_dir, args.result_dir, cmdline=cmdline, logger=logger)
         logger.info("Program finished successfully.")
     except KeyboardInterrupt:
         logger.info("Program interrupted by user, exiting.")
         print("Program interrupted by user, exiting.", file=sys.stderr)
         sys.exit(errno.EINTR)
     except Exception as e:
-        if debug:
+        if args.debug:
             import traceback
             logger.error(traceback.format_exc())
 
