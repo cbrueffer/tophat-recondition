@@ -55,6 +55,7 @@ FIX_MISSING_UNMAPPED_FLAG = "missing_unmapped_flag"
 FIX_STANDARDIZED_FLAGS = "standardized_flags"
 FIX_UNPAIRED_READ = "unpaired_read"
 
+
 def init_logger():
     """Initializes a logger that emits into a string buffer."""
     try:
@@ -143,7 +144,8 @@ def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
     infile_unmapped = os.path.join(path, unmapped_file)
     logger.info("Opening unmapped BAM file: %s" % infile_unmapped)
     with pysam.Samfile(infile_unmapped) as bam_unmapped:
-        logger.info("Loading unmapped BAM file into memory: %s" % infile_unmapped)
+        logger.info("Loading unmapped BAM file into memory: %s" %
+                    infile_unmapped)
         unmapped_reads = list(bam_unmapped.fetch(until_eof=True))
         unmapped_header = bam_unmapped.header
 
@@ -226,9 +228,12 @@ def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
 def print_stats(logger, counters):
     logger.info("---------------------------------------------------------")
     logger.info("Read correction statistics:")
-    logger.info("Unmapped flag missing:        %i" % counters[FIX_MISSING_UNMAPPED_FLAG])
-    logger.info("Standardized flags:           %i" % counters[FIX_STANDARDIZED_FLAGS])
-    logger.info("Unpaired due to missing mate: %i" % counters[FIX_UNPAIRED_READ])
+    logger.info("Unmapped flag missing:        %i" %
+                counters[FIX_MISSING_UNMAPPED_FLAG])
+    logger.info("Standardized flags:           %i" %
+                counters[FIX_STANDARDIZED_FLAGS])
+    logger.info("Unpaired due to missing mate: %i" %
+                counters[FIX_UNPAIRED_READ])
     logger.info("---------------------------------------------------------")
 
 
@@ -240,11 +245,13 @@ if __name__ == "__main__":
     logger, temp_handler, logbuffer = init_logger()
 
     parser = argparse.ArgumentParser(description='Post-process TopHat unmapped reads')
-    parser.add_argument("tophat_result_dir", help="directory containing accepted_hits.bam and unmapped.bam")
+    parser.add_argument("tophat_result_dir", help=
+                        "directory containing accepted_hits.bam and unmapped.bam")
     parser.add_argument("-d", "--debug", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("-l", "--logfile",
                         help="log file (optional, (default: result_dir/tophat-recondition.log)")
-    parser.add_argument("-q", "--quiet", action="store_true", help="quiet mode, no console output")
+    parser.add_argument("-q", "--quiet", action="store_true",
+                        help="quiet mode, no console output")
     parser.add_argument("-r", "--result_dir", default=None,
                         help="directory to write unmapped_fixup.bam to (default: tophat_output_dir)")
     parser.add_argument("-v", "--version", action="version", version="%(prog)s {VERSION}")
@@ -258,22 +265,25 @@ if __name__ == "__main__":
     logger.info("Current working directory: %s" % os.getcwd())
 
     if not os.path.isdir(args.tophat_result_dir):
-        logger.error("Specified tophat_output_dir does not exist or is not a directory: %s" % args.tophat_result_dir)
+        logger.error("Specified tophat_output_dir does not exist or is not a directory: %s" %
+                     args.tophat_result_dir)
         sys.exit(errno.EINVAL)
 
     if args.result_dir is None:
         args.result_dir = args.tophat_result_dir  # set default
     else:
         if not os.path.isdir(args.result_dir):
-            logger.error("Specified result_dir does not exist or is not a directory: %s" % args.result_dir)
+            logger.error("Specified result_dir does not exist or is not a directory: %s" %
+                         args.result_dir)
             sys.exit(errno.EINVAL)
 
     if args.logfile is None:
         args.logfile = os.path.join(args.result_dir, DEFAULT_LOG_NAME)
     try:
-        logger = logger_add_file_handler(logger, temp_handler, logbuffer, args.logfile)
+        logger = logger_add_file_handler(logger, temp_handler,
+                                         logbuffer, args.logfile)
     except Exception as e:
-        logger.error("Cannot open log file %s: %s" % (logfile, str(e)))
+        logger.error("Cannot open log file %s: %s" % (args.logfile, str(e)))
         sys.exit(1)
 
     logger.info("Writing logfile: %s" % args.logfile)

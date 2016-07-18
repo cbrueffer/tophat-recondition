@@ -1,9 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [1.1] - 2016-xx-xx
+## [1.1] - 2016-07-18
+### Added
+- Logging of how many reads were fixed in each problem category
+
 ### Changed
 - Utilizes the argparse module for commandline parsing
+- Support for Python 2.6 was dropped.
 
 ### Fixed
 - Fixed some issues under Python 3
