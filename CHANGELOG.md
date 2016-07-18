@@ -7,6 +7,9 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - Utilizes the argparse module for commandline parsing
+- As a consequence of the above, the argument "result_dir" was converted
+  into a proper optional argument under the -r flag.  If you use this
+  feature, the commandline invocation has changed a little.
 - Support for Python 2.6 was dropped.
 
 ### Fixed
