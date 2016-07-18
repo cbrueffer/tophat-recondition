@@ -226,6 +226,8 @@ def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
 
 
 def print_stats(logger, counters):
+    """Prints information about how many reads were fixed in each
+    bug category."""
     logger.info("---------------------------------------------------------")
     logger.info("Read correction statistics:")
     logger.info("Unmapped flag missing:        %i" %
@@ -244,7 +246,11 @@ if __name__ == "__main__":
 
     logger, temp_handler, logbuffer = init_logger()
 
-    parser = argparse.ArgumentParser(description='Post-process TopHat unmapped reads')
+    parser = argparse.ArgumentParser(description='Post-process TopHat unmapped '
+                                     'reads.  For detailed information on the '
+                                     'issues this software corrects, please '
+                                     'consult the software homepage: '
+                                     'https://github.com/cbrueffer/tophat-recondition')
     parser.add_argument("tophat_result_dir", help=
                         "directory containing accepted_hits.bam and unmapped.bam")
     parser.add_argument("-d", "--debug", action="store_true", help=argparse.SUPPRESS)
