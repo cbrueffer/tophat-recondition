@@ -214,11 +214,7 @@ def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
 
 
 if __name__ == "__main__":
-    try:
-        import argparse
-    except ImportError:
-        print('Cannot import the argparse module; please either install it, or \
-              upgrade to Python 2.7 or newer..\n', file=sys.stderr)
+    import argparse
 
     cmdline = " ".join(sys.argv)
 
@@ -226,12 +222,12 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Post-process TopHat unmapped reads')
     parser.add_argument("tophat_result_dir", help="directory containing accepted_hits.bam and unmapped.bam")
-    parser.add_argument("-r", "--result_dir", default=None,
-                        help="directory to write unmapped_fixup.bam to (default: tophat_output_dir)")
+    parser.add_argument("-d", "--debug", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("-l", "--logfile",
                         help="log file (optional, (default: result_dir/tophat-recondition.log)")
     parser.add_argument("-q", "--quiet", action="store_true", help="quiet mode, no console output")
-    parser.add_argument("-d", "--debug", action="store_true", help=argparse.SUPPRESS)
+    parser.add_argument("-r", "--result_dir", default=None,
+                        help="directory to write unmapped_fixup.bam to (default: tophat_output_dir)")
     parser.add_argument("-v", "--version", action="version", version="%(prog)s {VERSION}")
     args = parser.parse_args()
 
