@@ -1,6 +1,8 @@
 TopHat-Recondition
 ==================
 
+[![bioconda-badge](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square)](http://bioconda.github.io)
+
 tophat-recondition is a post-processor for TopHat unmapped reads (contained in *unmapped.bam*), making them compatible with downstream tools
 (e.g., the Picard suite, samtools, GATK) ([TopHat issue #17](https://github.com/infphilo/tophat/issues/17)).  It also works around bugs in TopHat:
 
@@ -18,6 +20,8 @@ Requirements
 
 - Python 2.7 or Python 3
 - [pysam](https://github.com/pysam-developers/pysam)
+
+TopHat-Recondition is available for installation with the conda package manager via the [bioconda](http://bioconda.github.io/) channel: ```conda install -c bioconda tophat-recondition```
 
 
 Usage
