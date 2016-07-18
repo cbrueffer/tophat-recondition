@@ -34,6 +34,7 @@ Homepage: https://github.com/cbrueffer/tophat-recondition
 
 from __future__ import print_function
 
+from collections import Counter
 import errno
 import logging
 import os
@@ -50,6 +51,9 @@ DEFAULT_LOG_NAME = "tophat-recondition.log"
 DEFAULT_LOG_LEVEL = logging.INFO
 LOG_FORMATTER = logging.Formatter("%(asctime)s - %(message)s", "%Y-%m-%d %H:%M:%S")
 
+FIX_MISSING_UNMAPPED_FLAG = "missing_unmapped_flag"
+FIX_STANDARDIZED_FLAGS = "standardized_flags"
+FIX_UNPAIRED_READ = "unpaired_read"
 
 def init_logger():
     """Initializes a logger that emits into a string buffer."""
@@ -134,6 +138,7 @@ def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
     unmapped_dict = {}
     unmapped_index = {}
     unmapped_with_mapped_mate = {}
+    counters = Counter()
 
     infile_unmapped = os.path.join(path, unmapped_file)
     logger.info("Opening unmapped BAM file: %s" % infile_unmapped)
@@ -158,6 +163,7 @@ def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
                 logger.info("Setting missing 0x8 flag for unmapped read-pair: %s" % read.qname)
                 unmapped_reads[unmapped_dict[read.qname]].mate_is_unmapped = True
                 read.mate_is_unmapped = True
+                counters[FIX_MISSING_UNMAPPED_FLAG] += 1
             else:
                 unmapped_dict[read.qname] = i
 
@@ -187,6 +193,7 @@ def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
                                                                                          mapped,
                                                                                          bam_unmapped,
                                                                                          bam_mapped)
+                        counters[FIX_STANDARDIZED_FLAGS] += 1
 
                 if mapped.qname in unmapped_with_mapped_mate:
                     unmapped_with_mapped_mate.pop(mapped.qname, None)
@@ -197,6 +204,7 @@ def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
         for readname, readidx in iter(unmapped_with_mapped_mate):
             logger.info("Mapped mate not found, unpairing unmapped read: %s" % readname)
             unmapped_reads[readidx] = unpair_read(unmapped_reads[readidx])
+            counters[FIX_UNPAIRED_READ] += 1
 
         base, ext = os.path.splitext(unmapped_file)
         out_filename = "".join([base, "_fixup", ext])
@@ -211,6 +219,17 @@ def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
     with pysam.Samfile(outfile, "wb", header=fixup_header) as bam_out:
         for read in unmapped_reads:
             bam_out.write(read)
+
+    return counters
+
+
+def print_stats(logger, counters):
+    logger.info("---------------------------------------------------------")
+    logger.info("Read correction statistics:")
+    logger.info("Unmapped flag missing:        %i" % counters[FIX_MISSING_UNMAPPED_FLAG])
+    logger.info("Standardized flags:           %i" % counters[FIX_STANDARDIZED_FLAGS])
+    logger.info("Unpaired due to missing mate: %i" % counters[FIX_UNPAIRED_READ])
+    logger.info("---------------------------------------------------------")
 
 
 if __name__ == "__main__":
@@ -259,7 +278,10 @@ if __name__ == "__main__":
 
     logger.info("Writing logfile: %s" % args.logfile)
     try:
-        fix_unmapped_reads(args.tophat_result_dir, args.result_dir, cmdline=cmdline, logger=logger)
+        counters = fix_unmapped_reads(args.tophat_result_dir,
+                                      args.result_dir, cmdline=cmdline,
+                                      logger=logger)
+        print_stats(logger, counters)
         logger.info("Program finished successfully.")
     except KeyboardInterrupt:
         logger.info("Program interrupted by user, exiting.")
