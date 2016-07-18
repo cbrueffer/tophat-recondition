@@ -54,6 +54,7 @@ LOG_FORMATTER = logging.Formatter("%(asctime)s - %(message)s", "%Y-%m-%d %H:%M:%
 FIX_MISSING_UNMAPPED_FLAG = "missing_unmapped_flag"
 FIX_STANDARDIZED_FLAGS = "standardized_flags"
 FIX_UNPAIRED_READ = "unpaired_read"
+FIX_REMOVED_SUFFIX = "removed_suffix"
 
 
 def init_logger():
@@ -156,6 +157,7 @@ def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
             # remove /1 and /2 suffixes
             if "/" in read.qname:
                 read.qname = read.qname[:-2]
+                counters[FIX_REMOVED_SUFFIX] += 1
 
             unmapped_index[read.qname] = i
 
@@ -230,7 +232,9 @@ def print_stats(logger, counters):
     bug category."""
     logger.info("---------------------------------------------------------")
     logger.info("Read correction statistics:")
-    logger.info("Unmapped flag missing:        %i" %
+    logger.info("Removed /1 or /2 suffix:      %i" %
+                counters[FIX_REMOVED_SUFFIX])
+    logger.info("Restored unmapped flag        %i" %
                 counters[FIX_MISSING_UNMAPPED_FLAG])
     logger.info("Standardized flags:           %i" %
                 counters[FIX_STANDARDIZED_FLAGS])
