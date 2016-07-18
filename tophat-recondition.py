@@ -59,10 +59,7 @@ FIX_REMOVED_SUFFIX = "removed_suffix"
 
 def init_logger():
     """Initializes a logger that emits into a string buffer."""
-    try:
-        import StringIO  # Python 2
-    except:
-        from io import StringIO  # Python 3
+    from io import StringIO
 
     logger = logging.getLogger("")
     logger.setLevel(DEFAULT_LOG_LEVEL)
