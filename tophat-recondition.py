@@ -46,7 +46,7 @@ except ImportError:
           file=sys.stderr)
     sys.exit(1)
 
-VERSION = "1.1"
+__version__ = "1.1"
 DEFAULT_LOG_NAME = "tophat-recondition.log"
 DEFAULT_LOG_LEVEL = logging.INFO
 LOG_FORMATTER = logging.Formatter("%(asctime)s - %(message)s", "%Y-%m-%d %H:%M:%S")
@@ -213,7 +213,7 @@ def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
     # For the output file, take the headers from the unmapped file.
     fixup_header = unmapped_header
     fixup_header['PG'].append({'ID': 'TopHat-Recondition',
-                               'VN': VERSION,
+                               'VN': __version__,
                                'CL': cmdline})
     outfile = os.path.join(outdir, out_filename)
     logger.info("Writing corrected BAM file: %s" % outfile)
@@ -261,13 +261,13 @@ if __name__ == "__main__":
                         help="quiet mode, no console output")
     parser.add_argument("-r", "--result_dir", default=None,
                         help="directory to write unmapped_fixup.bam to (default: tophat_output_dir)")
-    parser.add_argument("-v", "--version", action="version", version="%(prog)s {VERSION}")
+    parser.add_argument("-v", "--version", action="version", version="%(prog)s " + __version__)
     args = parser.parse_args()
 
     if not args.quiet:
         logger_add_console_handler(logger)
 
-    logger.info("Starting run of tophat-recondition %s" % VERSION)
+    logger.info("Starting run of tophat-recondition %s" % __version__)
     logger.info("Command: %s" % cmdline)
     logger.info("Current working directory: %s" % os.getcwd())
 
