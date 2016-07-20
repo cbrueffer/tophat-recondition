@@ -287,6 +287,8 @@ if __name__ == "__main__":
                          args.result_dir)
             sys.exit(errno.EINVAL)
 
+    logger.info("Using TopHat output directory: %s" % args.result_dir)
+
     for f in [args.mapped_file, args.unmapped_file]:
         filepath = os.path.join(args.tophat_result_dir, f)
         if not (os.path.exists(filepath) and os.path.isfile(filepath)):
