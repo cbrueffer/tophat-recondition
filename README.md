@@ -28,23 +28,41 @@ Usage
 -----
 
 ```
-Usage:
+usage: tophat-recondition.py [-h] [-l LOGFILE] [-m MAPPED_FILE] [-q]
+                             [-r RESULT_DIR] [-u UNMAPPED_FILE] [-v]
+                             tophat_result_dir
 
-tophat-recondition.py [-hv] [-l logfile] tophat_output_dir [result_dir]
+Post-process TopHat unmapped reads. For detailed information on the issues
+this software corrects, please consult the software homepage:
+https://github.com/cbrueffer/tophat-recondition
 
--h                 print this usage text and exit (optional)
--l                 log file (optional, default: result_dir/tophat-recondition.log)
--q                 quiet mode, no console output (optional)
--v                 print the script name and version, and exit (optional)
-tophat_output_dir: directory containing accepted_hits.bam and unmapped.bam
-result_dir:        directory to write unmapped_fixup.bam to (optional,
-                   default: tophat_output_dir)
+positional arguments:
+  tophat_result_dir     directory containing TopHat mapped and unmapped read
+                        files.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -l LOGFILE, --logfile LOGFILE
+                        log file (optional, (default: result_dir/tophat-
+                        recondition.log)
+  -m MAPPED_FILE, --mapped-file MAPPED_FILE
+                        Name of the file containing mapped reads (default:
+                        accepted_hits.bam)
+  -q, --quiet           quiet mode, no console output
+  -r RESULT_DIR, --result_dir RESULT_DIR
+                        directory to write unmapped_fixup.bam to (default:
+                        tophat_output_dir)
+  -u UNMAPPED_FILE, --unmapped-file UNMAPPED_FILE
+                        Name of the file containing unmapped reads (default:
+                        unmapped.bam)
+  -v, --version         show program's version number and exit
 ```
 
-Please make sure *tophat_output_dir* contains both, the *accepted_hits.bam* and *unmapped.bam* file.  The fixed
-reads will be written to the file *unmapped_fixup.bam* in *result_dir*.
 
-**Note:** *unmapped.bam* is read into memory, so make sure your computer has enough RAM to fit it.
+Please make sure *tophat_output_dir* contains both, the mapped file (default: *accepted_hits.bam*) and the unmapped file (default: *unmapped.bam*).  The fixed
+reads will be written to a file with the unmapped file name stem and the suffix *_fixup*, e.g. *unmapped_fixup.bam*, in *result_dir*.
+
+**Note:** The unmapped file is read into memory, so make sure your computer has enough RAM to fit it.
 
 
 Details
