@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
   names for the mapped and unmapped file (relative to the specified
   "tophat_output_dir").  The defaults are the standard TopHat names
   accepted_hits.bam and unmapped.bam.
+- Added logging of the directory that the result file is written to.
 
 ## [1.1] - 2016-07-18
 ### Added
