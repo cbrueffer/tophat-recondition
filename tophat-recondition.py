@@ -207,8 +207,7 @@ def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
             unmapped_reads[readidx] = unpair_read(unmapped_reads[readidx])
             counters[FIX_UNPAIRED_READ] += 1
 
-        base, ext = os.path.splitext(unmapped_file)
-        out_filename = "".join([base, "_fixup", ext])
+        out_filename = "%s_fixup.bam" % os.path.splitext(unmapped_file)[0]
 
     # For the output file, take the headers from the unmapped file.
     fixup_header = unmapped_header
