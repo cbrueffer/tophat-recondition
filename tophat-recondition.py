@@ -252,7 +252,7 @@ if __name__ == "__main__":
                                      'consult the software homepage: '
                                      'https://github.com/cbrueffer/tophat-recondition')
     parser.add_argument("tophat_result_dir", help=
-                        "directory containing accepted_hits.bam and unmapped.bam")
+                        "directory containing TopHat mapped and unmapped read files.")
     parser.add_argument("-d", "--debug", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("-l", "--logfile",
                         help="log file (optional, (default: result_dir/tophat-recondition.log)")
