@@ -46,7 +46,7 @@ except ImportError:
           file=sys.stderr)
     sys.exit(1)
 
-__version__ = "1.1"
+__version__ = "1.2"
 DEFAULT_LOG_NAME = "tophat-recondition.log"
 DEFAULT_LOG_LEVEL = logging.INFO
 LOG_FORMATTER = logging.Formatter("%(asctime)s - %(message)s", "%Y-%m-%d %H:%M:%S")
