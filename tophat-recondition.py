@@ -257,10 +257,14 @@ if __name__ == "__main__":
     parser.add_argument("-d", "--debug", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("-l", "--logfile",
                         help="log file (optional, (default: result_dir/tophat-recondition.log)")
+    parser.add_argument("-m", "--mapped-file", default="accepted_hits.bam",
+                        help=("Name of the file containing mapped reads (default: %(default)s)"))
     parser.add_argument("-q", "--quiet", action="store_true",
                         help="quiet mode, no console output")
     parser.add_argument("-r", "--result_dir", default=None,
                         help="directory to write unmapped_fixup.bam to (default: tophat_output_dir)")
+    parser.add_argument("-u", "--unmapped-file", default="unmapped.bam",
+                        help=("Name of the file containing unmapped reads (default: %(default)s)"))
     parser.add_argument("-v", "--version", action="version", version="%(prog)s " + __version__)
     args = parser.parse_args()
 
@@ -284,6 +288,12 @@ if __name__ == "__main__":
                          args.result_dir)
             sys.exit(errno.EINVAL)
 
+    for f in [args.mapped_file, args.unmapped_file]:
+        filepath = os.path.join(args.tophat_result_dir, f)
+        if not (os.path.exists(filepath) and os.path.isfile(filepath)):
+            logger.error("Specified input file does not exist: %s" % filepath)
+            sys.exit(errno.EINVAL)
+
     if args.logfile is None:
         args.logfile = os.path.join(args.result_dir, DEFAULT_LOG_NAME)
     try:
@@ -296,8 +306,9 @@ if __name__ == "__main__":
     logger.info("Writing logfile: %s" % args.logfile)
     try:
         counters = fix_unmapped_reads(args.tophat_result_dir,
-                                      args.result_dir, cmdline=cmdline,
-                                      logger=logger)
+                                      args.result_dir,
+                                      args.mapped_file, args.unmapped_file,
+                                      cmdline=cmdline, logger=logger)
         print_stats(logger, counters)
         logger.info("Program finished successfully.")
     except KeyboardInterrupt:
