@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [1.3] - 2016-08-15
+### Fixed
+- Fixed logging warnings when using Python 2.7
+
 ## [1.2] - 2016-07-20
 ### Added
 - New commandline switches (-m and -u) to allow specifying different
@@ -75,7 +79,8 @@ All notable changes to this project will be documented in this file.
 ### Added
 - First release of the software as *fix_tophat_unmapped_reads*.
 
-[unreleased]: https://github.com/cbrueffer/tophat-recondition/compare/v1.2...HEAD
+[unreleased]: https://github.com/cbrueffer/tophat-recondition/compare/v1.3...HEAD
+[1.3]: https://github.com/cbrueffer/tophat-recondition/compare/v1.2...v1.3
 [1.2]: https://github.com/cbrueffer/tophat-recondition/compare/v1.1...v1.2
 [1.1]: https://github.com/cbrueffer/tophat-recondition/compare/v1.0...v1.1
 [1.0]: https://github.com/cbrueffer/tophat-recondition/compare/v0.4...v1.0

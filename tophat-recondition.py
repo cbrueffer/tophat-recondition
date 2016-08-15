@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*
 #
-# Copyright (c) 2013-2015 Christian Brueffer (ORCID: 0000-0002-3826-0989)
+# Copyright (c) 2013-2016 Christian Brueffer (ORCID: 0000-0002-3826-0989)
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ except ImportError:
           file=sys.stderr)
     sys.exit(1)
 
-__version__ = "1.2"
+__version__ = "1.3"
 DEFAULT_LOG_NAME = "tophat-recondition.log"
 DEFAULT_LOG_LEVEL = logging.INFO
 LOG_FORMATTER = logging.Formatter("%(asctime)s - %(message)s", "%Y-%m-%d %H:%M:%S")
@@ -59,7 +59,10 @@ FIX_REMOVED_SUFFIX = "removed_suffix"
 
 def init_logger():
     """Initializes a logger that emits into a string buffer."""
-    from io import StringIO
+    if sys.version_info[0] < 3:
+        from io import BytesIO as StringIO
+    else:
+        from io import StringIO
 
     logger = logging.getLogger("")
     logger.setLevel(DEFAULT_LOG_LEVEL)
