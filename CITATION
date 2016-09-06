@@ -2,7 +2,7 @@ To cite TopHat-Recondition in publications, please use:
 
   Brueffer, C. and Saal, L. H. (2016).
   TopHat-Recondition: A post-processor for TopHat unmapped reads.
-  BMC Bioinformatics. 2016;17:199. doi:10.1186/s12859-016-1058-x
+  BMC Bioinformatics, 2016. 17(1):199. doi:10.1186/s12859-016-1058-x
 
 
 A BibTeX entry for LaTeX users is:
@@ -12,7 +12,10 @@ A BibTeX entry for LaTeX users is:
   author = {Brueffer, Christian and Saal, Lao H},
   journal = {BMC Bioinformatics},
   month = {5},
-  year = {2016}
+  year = {2016},
+  volume = {17},
+  pages = {199},
+  number = {1},
   doi = {10.1186/s12859-016-1058-x},
   url = {http://dx.doi.org/10.1186/s12859-016-1058-x},
 }
