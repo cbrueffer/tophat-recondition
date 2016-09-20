@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [1.4] - in progress
+### Fixed
+- Fixed iteration over unmapped_with_mapped_mate dictionary.
+
 ## [1.3] - 2016-08-15
 ### Fixed
 - Fixed logging warnings when using Python 2.7
