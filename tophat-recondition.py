@@ -205,7 +205,7 @@ def fix_unmapped_reads(path, outdir, mapped_file="accepted_hits.bam",
         # Reset unmapped reads with "mate is mapped" bit set, but where the
         # mapped mate is absent.  This works around TopHat issue #16
         # https://github.com/infphilo/tophat/issues/16
-        for readname, readidx in iter(unmapped_with_mapped_mate):
+        for readname, readidx in unmapped_with_mapped_mate.items():
             logger.info("Mapped mate not found, unpairing unmapped read: %s" % readname)
             unmapped_reads[readidx] = unpair_read(unmapped_reads[readidx])
             counters[FIX_UNPAIRED_READ] += 1
