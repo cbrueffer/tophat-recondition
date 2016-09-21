@@ -46,11 +46,12 @@ except ImportError:
           file=sys.stderr)
     sys.exit(1)
 
-__version__ = "1.3"
+__version__ = "1.4"
 DEFAULT_LOG_NAME = "tophat-recondition.log"
 DEFAULT_LOG_LEVEL = logging.INFO
 LOG_FORMATTER = logging.Formatter("%(asctime)s - %(message)s", "%Y-%m-%d %H:%M:%S")
 
+# counters
 FIX_MISSING_UNMAPPED_FLAG = "missing_unmapped_flag"
 FIX_STANDARDIZED_FLAGS = "standardized_flags"
 FIX_UNPAIRED_READ = "unpaired_read"

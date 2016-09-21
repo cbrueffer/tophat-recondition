@@ -1,9 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [1.4] - in progress
+## [1.4] - 2016-09-21
 ### Fixed
-- Fixed iteration over unmapped_with_mapped_mate dictionary.
+- Fixed iteration over unmapped_with_mapped_mate dictionary (thanks
+  to Rory Kirchner).
 
 ## [1.3] - 2016-08-15
 ### Fixed
@@ -83,7 +84,8 @@ All notable changes to this project will be documented in this file.
 ### Added
 - First release of the software as *fix_tophat_unmapped_reads*.
 
-[unreleased]: https://github.com/cbrueffer/tophat-recondition/compare/v1.3...HEAD
+[unreleased]: https://github.com/cbrueffer/tophat-recondition/compare/v1.4...HEAD
+[1.4]: https://github.com/cbrueffer/tophat-recondition/compare/v1.3...v1.4
 [1.3]: https://github.com/cbrueffer/tophat-recondition/compare/v1.2...v1.3
 [1.2]: https://github.com/cbrueffer/tophat-recondition/compare/v1.1...v1.2
 [1.1]: https://github.com/cbrueffer/tophat-recondition/compare/v1.0...v1.1
