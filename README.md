@@ -4,10 +4,10 @@ TopHat-Recondition
 [![bioconda-badge](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square)](http://bioconda.github.io)
 
 tophat-recondition is a post-processor for TopHat unmapped reads (contained in *unmapped.bam*), making them compatible with downstream tools
-(e.g., the Picard suite, samtools, GATK) ([TopHat issue #17](https://github.com/infphilo/tophat/issues/17)).  It also works around bugs in TopHat:
+(e.g., the Picard suite, samtools, GATK) ([TopHat issue #17](https://github.com/DaehwanKimLab/tophat/issues/17)).  It also works around bugs in TopHat:
 
-- the "mate is unmapped" SAM flag is not set on any reads in the unmapped.bam file ([TopHat issue #3](https://github.com/infphilo/tophat/issues/3))
-- the mapped mate of an unmapped read can be absent from *accepted_hits.bam*, creating a mismatch between the file and the unmapped read's flags ([TopHat issue #16](https://github.com/infphilo/tophat/issues/16))
+- the "mate is unmapped" SAM flag is not set on any reads in the unmapped.bam file ([TopHat issue #3](https://github.com/DaehwanKimLab/tophat/issues/3))
+- the mapped mate of an unmapped read can be absent from *accepted_hits.bam*, creating a mismatch between the file and the unmapped read's flags ([TopHat issue #16](https://github.com/DaehwanKimLab/tophat/issues/16))
 
 This software was developed as part of a PhD research project in the
 [laboratory of Lao H. Saal, Translational Oncogenomics Unit, Department of Oncology and Pathology, Lund University, Sweden](http://www.med.lu.se/saalgroup).
